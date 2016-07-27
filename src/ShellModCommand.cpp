@@ -32,7 +32,7 @@ MSyntax ShellModCommand::newSyntax()
 	MSyntax syntax;
 
 	syntax.addFlag( "-a", "-addObjects" );
-	syntax.addFlag( "-r", "-remove", MSyntax::kString );
+	syntax.addFlag( "-r", "-remove");
 
 	syntax.addFlag( "-sp", "-savePreset", MSyntax::kString  );
 	syntax.addFlag( "-lp", "-loadPreset", MSyntax::kString  );
@@ -525,9 +525,19 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 				MFnDependencyNode inMesh_dn(inMeshPlug.node());
 
-				MPlug p_in_overrideEnabled = inMesh_dn.findPlug("overrideEnabled", false, &status);
+
+				// MGlobal::displayInfo(MString() + "[DEBUG] Connected Mesh Node " + inMesh_dn.name() );
+
+				//MPlug p_in_overrideEnabled = inMesh_dn.findPlug("overrideEnabled", false, &status);
+				//CHECK_MSTATUS_AND_RETURN_IT(status);
+				//status = p_in_overrideEnabled.setBool(false);
+				//CHECK_MSTATUS_AND_RETURN_IT(status);
+
+				MPlug p_in_overrideShading = inMesh_dn.findPlug("overrideShading", false, &status);
 				CHECK_MSTATUS_AND_RETURN_IT(status);
-				p_in_overrideEnabled.setBool(false);
+				status = p_in_overrideShading.setBool(true);
+				CHECK_MSTATUS_AND_RETURN_IT(status);
+
 			}
 		}
 
@@ -538,8 +548,15 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		MGlobal::displayInfo(MString() + "[Shellmod] Connected Mesh Node " + mfDgN2.name() );
 
+
 		status = m_DAGMod.deleteNode(mfDgN2.parent(0));
 		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		// Delete shellmod node too
+		status = m_DAGMod.deleteNode(depN.object());
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
 		m_DAGMod.doIt();
 	}
 

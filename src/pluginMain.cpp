@@ -26,7 +26,7 @@ MStatus initializePlugin( MObject obj )
 	MGlobal::executeCommand( mel_createShelf() );
 	MGlobal::executeCommand( mel_AETemplate() );
 
-	MFnPlugin fnPlugin( obj, "Creative Case", "2.03", "Any" );
+	MFnPlugin fnPlugin( obj, "Creative Case", "2.04", "Any" );
 
 	status = fnPlugin.registerCommand( "shellModCommand", ShellModCommand::creator, ShellModCommand::newSyntax );
 	CHECK_MSTATUS_AND_RETURN_IT( status );
@@ -35,7 +35,8 @@ MStatus initializePlugin( MObject obj )
 	status = fnPlugin.registerNode("shellModNode", shellModNode::id, shellModNode::creator, shellModNode::initialize);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    shellModNode::pluginLoadPath = fnPlugin.loadPath();
+    shellModNode::pluginLoadPath = fnPlugin.loadPath(&status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
     //fnPlugin.addMenuItem("Create ShellMod", "MayaWindow|mainMeshToolsMenu", "shellModCommand", "");
     //fnPlugin.addMenuItem("Add to ShellMod", "MayaWindow|mainMeshToolsMenu", "shellModCommand -a", "");

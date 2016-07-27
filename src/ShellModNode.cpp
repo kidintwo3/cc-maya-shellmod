@@ -37,7 +37,7 @@ MString     shellModNode::pluginLoadPath;
 
 MTypeId		shellModNode::id(0x00123940);
 
-void inline swapInt(int &a, int &b) { int c = a; a = b; b = c; }
+
 
 bool m_isDuplicating; // Callback hack
 
@@ -171,6 +171,9 @@ void shellModNode::postConstructor()
 
 	// Check preset folder
 	shellModNode::checkPresetFolder();
+
+	setExistWithoutOutConnections(false);
+	setExistWithoutInConnections(false);
 
 }
 
@@ -1811,11 +1814,19 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	MStatus status;
 
+
+	// check that the output mesh is connected
+	MPlug p_outMesh_check = MPlug(this->thisMObject(), aOutMesh);
+
+	if (!p_outMesh_check.isConnected())
+	{
+		return MS::kSuccess;
+	}
+
+
 	// collect the input plug data
 	status = collectPlugs(data);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
 
 	// Store curve data
 	status = storeProfileCurveData();
