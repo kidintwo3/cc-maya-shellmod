@@ -86,3 +86,5 @@ $RECYCLE.BIN/
 *.opensdf
 *.sdf
 *.cfg
+*.suo
+*.sln
