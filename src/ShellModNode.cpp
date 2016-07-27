@@ -2099,7 +2099,7 @@ MStatus shellModNode::initialize()
 
 	shellModNode::aBulge = nAttr.create("profileStrength", "profileStrength", MFnNumericData::kDouble);
 	nAttr.setStorable(true);
-	nAttr.setDefault(0.0);
+	nAttr.setDefault(0.25);
 	nAttr.setSoftMin(-1.0);
 	nAttr.setSoftMax(1.0);
 	nAttr.setKeyable(true);
