@@ -88,3 +88,15 @@ $RECYCLE.BIN/
 *.cfg
 *.suo
 *.sln
+
+*.xcworkspacedata
+
+*.xcuserstate
+
+*.xcsettings
+
+*.xcbkptlist
+
+*.xcscheme
+
+*.plist
