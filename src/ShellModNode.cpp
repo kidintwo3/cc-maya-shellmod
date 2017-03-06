@@ -624,6 +624,23 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 	}
 
 
+	// Store Crease Data
+	for (int i = 0; i < m_inMeshArray.length(); i++)
+	{
+
+		m_crease_vert_ids.clear();
+		m_crease_vert_data.clear();
+
+		m_crease_edge_ids.clear();
+		m_crease_edge_data.clear();
+
+		MFnMesh meshFn_iter(m_inMeshArray[i]); 
+
+		// Store the original meshes edge creases
+		meshFn_iter.getCreaseVertices(m_crease_vert_ids, m_crease_vert_data);
+		meshFn_iter.getCreaseEdges(m_crease_edge_ids, m_crease_edge_data);
+
+	}
 
 
 
@@ -661,11 +678,11 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 					MPlug p_displaySmoothMesh = inMesh_dn.findPlug("displaySmoothMesh", &status);
 					CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	/*				MPlug p_in_overrideEnable = inMesh_dn.findPlug("overrideEnabled", &status);
+					/*				MPlug p_in_overrideEnable = inMesh_dn.findPlug("overrideEnabled", &status);
 					CHECK_MSTATUS_AND_RETURN_IT(status);
-*/
+					*/
 					m_isSmoothed = p_displaySmoothMesh.asInt();
-					
+
 
 
 					// collect smooth plugs on all objects
@@ -673,8 +690,8 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 
 
 					// Set override for main mesh shading - not possible
-					 //p_in_overrideEnable.setBool(m_disableBaseMeshOverride);
-					 // MGlobal::displayInfo(MString() + m_disableBaseMeshOverride);
+					//p_in_overrideEnable.setBool(m_disableBaseMeshOverride);
+					// MGlobal::displayInfo(MString() + m_disableBaseMeshOverride);
 
 				}
 
@@ -1219,13 +1236,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MPointArray oldVertPointsA;
 	mFn.getPoints(oldVertPointsA, MSpace::kObject);
 
-	//
-
-	//MUintArray edgeIds;
-	//MDoubleArray creaseData;
-
-	// Store the original meshes edge creases
-	//mFn.getCreaseEdges(edgeIds, creaseData);
 
 	// Store old UV's
 
@@ -1867,6 +1877,10 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+
+
+
+
 	extrudeMesh(newMeshData);
 
 
@@ -1889,6 +1903,24 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+
+	MGlobal::displayInfo(MString() + "---");
+	for (int i = 0; i < m_crease_vert_ids.length(); i++)
+	{
+
+		MGlobal::displayInfo(MString() + m_crease_vert_ids[i]);
+	}
+	MGlobal::displayInfo(MString() + "---");
+	for (int i = 0; i < m_crease_edge_ids.length(); i++)
+	{
+
+		MGlobal::displayInfo(MString() + m_crease_edge_ids[i]);
+	}
+	MGlobal::displayInfo(MString() + "---");
+
+	// Set crease
+	ex_meshFn.setCreaseVertices(m_crease_vert_ids, m_crease_vert_data);
+	ex_meshFn.setCreaseEdges(m_crease_edge_ids, m_crease_edge_data);
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally

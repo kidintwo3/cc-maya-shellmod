@@ -47,6 +47,7 @@
 #include <maya/MMeshSmoothOptions.h>
 #include <maya/MRampAttribute.h>
 
+#include <maya/MUintArray.h>
 
 
 #include <maya/MFnSingleIndexedComponent.h>
@@ -271,6 +272,12 @@ private:
     MFileObject         o_presetPath;
 
 	MString				m_mayaVer;
+
+	MUintArray			m_crease_vert_ids;
+	MDoubleArray		m_crease_vert_data;
+
+	MUintArray			m_crease_edge_ids;
+	MDoubleArray		m_crease_edge_data;
 
 	//MCallbackId			cb_postDeleteID;
 
