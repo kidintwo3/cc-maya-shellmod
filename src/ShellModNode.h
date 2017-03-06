@@ -279,6 +279,16 @@ private:
 	MUintArray			m_crease_edge_ids;
 	MDoubleArray		m_crease_edge_data;
 
+
+	MUintArray			m_crease_vert_ids_extruded;
+	MDoubleArray		m_crease_vert_data_extruded;
+
+	MUintArray			m_crease_edge_ids_extruded;
+	MDoubleArray		m_crease_edge_data_extruded;
+
+
+	vector<MIntArray>	m_vertConnA;
+
 	//MCallbackId			cb_postDeleteID;
 
 };

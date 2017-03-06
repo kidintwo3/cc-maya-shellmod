@@ -624,7 +624,17 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 	}
 
 
+
+
+
 	// Store Crease Data
+
+	m_crease_vert_ids_extruded.clear();
+	m_crease_vert_data_extruded.clear();
+
+	m_crease_edge_ids_extruded.clear();
+	m_crease_edge_data_extruded.clear();
+
 	for (int i = 0; i < m_inMeshArray.length(); i++)
 	{
 
@@ -1230,6 +1240,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	oldPolyNormalA.clear();
 	oldVertNormalA.clear();
 
+	m_vertConnA.clear();
+
 	MIntArray hardVerts, hardPolys, faceIDs;
 
 	// Store all the points of the original mesh
@@ -1351,12 +1363,18 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	double straightEdgeRad =  ( (270.0 - m_straightEdgesAngle) * M_PI/ 180 );
 
 	int numPoly = 0;
+	int previndex = 0;
+
 	int borderPolyCount = 0;
 	numPoly = mFn.numPolygons();
+
+
+	MGlobal::displayInfo(MString() + "start ---");
 
 	for (int seg = segStart; seg < m_segments; seg++) // Iterate trough numbers of extrusions
 	{
 
+		MGlobal::displayInfo(MString() + "---");
 
 		status = mFn.extrudeFaces(numv, 1, &trVec, true);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1368,7 +1386,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			borderPolyCount = mFn.numPolygons()-(numPoly * 2);
 		}
 
-
+		MIntArray m_vertConnA_segment;
 
 		//MGlobal::displayInfo(MString() + "seg: " + seg);
 
@@ -1381,6 +1399,9 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			//#pragma omp parallel for
 			for ( int j = 0; j < polygonVerts.length(); j++)
 			{
+
+				m_vertConnA_segment.append(polygonVerts[j]);
+
 
 				mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
 				mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
@@ -1415,15 +1436,57 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 					if (m_straightEdges)
 					{
+
+
+						
+
+
 						if (fac >= 1.0 && fac <= straightEdgeRad )
 						{
 							vx2 = vx1+fac*vec1 *  (m_weight * m_curve_positions[seg]);
 
+
+							
+
+							// MGlobal::displayInfo(MString() + "vert: " + polygonVerts[j]);
+
+							//m_crease_vert_ids_extruded.append(polygonVerts[j]);
+							//m_crease_vert_data_extruded.append(1.0);
+
+						}
+						/*
+						mItVert.setIndex(polygonVerts[j],previndex);
+						mItVert.getConnectedVertices(connVertices);
+
+						bool break_loop = false;
+
+						for (int i = 0; i < connVertices.length(); i++)
+						{
+
+						for (int z = 0; z < m_crease_vert_ids.length(); z++)
+						{
+						if (connVertices[i] == m_crease_vert_ids[z])
+						{
+
+						MGlobal::displayInfo(MString() + "crease: " + m_crease_vert_ids[z]);
+
+						break_loop = true;
 						}
 
-						//mItVert.setIndex(polygonVerts[j],previndex);
-						//mItVert.getConnectedVertices(connVertices);
+						if (break_loop)
+						{
+						break;
+						}
+						}
 
+
+						if (break_loop)
+						{
+						break;
+						}
+
+						}
+						*/
 						//MPoint closestP;
 						//MPoint prevP = vertPoints[connVertices[0]];
 						//double prevDist;
@@ -1479,13 +1542,105 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 			}
+
+			
 		}
+
+
+		m_vertConnA.push_back(m_vertConnA_segment);
 
 		mFn.setPoints(vertPoints, MSpace::kObject);
 
 
 
 	}
+
+
+	// Sort Crease set
+
+
+	MGlobal::displayInfo(MString() + "m_vertConnA ---" + m_vertConnA.size());
+
+
+	for(int i=0; i < m_vertConnA.size(); i++)
+	{
+		 
+		 MGlobal::displayInfo(MString() + "-----");
+		 for(int z=0; z < m_vertConnA[i].length(); z++)
+		{
+
+			MGlobal::displayInfo(MString() + m_vertConnA[i][z]);
+
+		}
+
+	}
+
+
+
+
+
+	 MGlobal::displayInfo(MString() + "-----");
+	  MGlobal::displayInfo(MString() + "-----");
+
+	   MGlobal::displayInfo(MString() + "-----");
+
+	vector<MIntArray>	m_vertConnA_sorted;
+
+	for(int i=0; i < m_vertConnA.size(); i++)
+	{
+		// MGlobal::displayInfo(MString() + "-----");
+
+		MIntArray tempA;
+
+		for(int z=0; z < m_vertConnA.size(); z++)
+		{
+
+			// MGlobal::displayInfo(MString() + m_vertConnA[z][i]);
+
+				tempA.append(m_vertConnA[z][i]);
+
+		}
+
+		m_vertConnA_sorted.push_back(tempA);
+	}
+
+	mFn.getPoints(allVerts, MSpace::kObject);
+
+
+	for (int i = 0; i < m_vertConnA_sorted.size(); i++)
+	{
+
+		MGlobal::displayInfo(MString() + "-----");
+
+		for(int z=0; z < m_vertConnA_sorted[i].length(); z++)
+		{
+
+			if (z < m_vertConnA_sorted[i].length()-1)
+			{
+				if (m_vertConnA_sorted[i].length() > 1)
+				{
+					MGlobal::displayInfo(MString() + m_vertConnA_sorted[i][z] + " -> " +  m_vertConnA_sorted[i][z+1] );
+				}
+				
+			}
+
+		}
+	}
+
+						//	mItVert.setIndex(polygonVerts[j],previndex);
+						//mItVert.getConnectedVertices(connVertices);
+
+						//bool break_loop = false;
+
+						//for (int i = 0; i < connVertices.length(); i++)
+						//{
+
+						//for (int z = 0; z < m_crease_vert_ids.length(); z++)
+						//{
+						//if (connVertices[i] == m_crease_vert_ids[z])
+						//{
+
+
 
 	//MGlobal::displayInfo(MString() + numPolyExtr);
 
@@ -1903,24 +2058,24 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-
+	/*
 	MGlobal::displayInfo(MString() + "---");
 	for (int i = 0; i < m_crease_vert_ids.length(); i++)
 	{
 
-		MGlobal::displayInfo(MString() + m_crease_vert_ids[i]);
+	MGlobal::displayInfo(MString() + m_crease_vert_ids[i]);
 	}
 	MGlobal::displayInfo(MString() + "---");
 	for (int i = 0; i < m_crease_edge_ids.length(); i++)
 	{
 
-		MGlobal::displayInfo(MString() + m_crease_edge_ids[i]);
+	MGlobal::displayInfo(MString() + m_crease_edge_ids[i]);
 	}
-	MGlobal::displayInfo(MString() + "---");
+	MGlobal::displayInfo(MString() + "---");*/
 
 	// Set crease
-	ex_meshFn.setCreaseVertices(m_crease_vert_ids, m_crease_vert_data);
-	ex_meshFn.setCreaseEdges(m_crease_edge_ids, m_crease_edge_data);
+	ex_meshFn.setCreaseVertices(m_crease_vert_ids_extruded, m_crease_vert_data_extruded);
+	// ex_meshFn.setCreaseEdges(m_crease_edge_ids_extruded, m_crease_edge_data);
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally
