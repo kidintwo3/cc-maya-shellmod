@@ -1369,12 +1369,12 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	numPoly = mFn.numPolygons();
 
 
-	MGlobal::displayInfo(MString() + "start ---");
+	//MGlobal::displayInfo(MString() + "start ---");
 
 	for (int seg = segStart; seg < m_segments; seg++) // Iterate trough numbers of extrusions
 	{
 
-		MGlobal::displayInfo(MString() + "---");
+		//MGlobal::displayInfo(MString() + "---");
 
 		status = mFn.extrudeFaces(numv, 1, &trVec, true);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1559,30 +1559,30 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	// Sort Crease set
 
 
-	MGlobal::displayInfo(MString() + "m_vertConnA ---" + m_vertConnA.size());
+	//MGlobal::displayInfo(MString() + "m_vertConnA ---" + m_vertConnA.size());
 
 
-	for(int i=0; i < m_vertConnA.size(); i++)
-	{
-		 
-		 MGlobal::displayInfo(MString() + "-----");
-		 for(int z=0; z < m_vertConnA[i].length(); z++)
-		{
+	//for(int i=0; i < m_vertConnA.size(); i++)
+	//{
+	//	 
+	//	 MGlobal::displayInfo(MString() + "-----");
+	//	 for(int z=0; z < m_vertConnA[i].length(); z++)
+	//	{
 
-			MGlobal::displayInfo(MString() + m_vertConnA[i][z]);
+	//		MGlobal::displayInfo(MString() + m_vertConnA[i][z]);
 
-		}
+	//	}
 
-	}
-
-
+	//}
 
 
 
-	 MGlobal::displayInfo(MString() + "-----");
-	  MGlobal::displayInfo(MString() + "-----");
 
-	   MGlobal::displayInfo(MString() + "-----");
+
+	 //MGlobal::displayInfo(MString() + "-----");
+	 // MGlobal::displayInfo(MString() + "-----");
+
+	 //  MGlobal::displayInfo(MString() + "-----");
 
 	vector<MIntArray>	m_vertConnA_sorted;
 
@@ -1607,25 +1607,25 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	mFn.getPoints(allVerts, MSpace::kObject);
 
 
-	for (int i = 0; i < m_vertConnA_sorted.size(); i++)
-	{
+	//for (int i = 0; i < m_vertConnA_sorted.size(); i++)
+	//{
 
-		MGlobal::displayInfo(MString() + "-----");
+	//	MGlobal::displayInfo(MString() + "-----");
 
-		for(int z=0; z < m_vertConnA_sorted[i].length(); z++)
-		{
+	//	for(int z=0; z < m_vertConnA_sorted[i].length(); z++)
+	//	{
 
-			if (z < m_vertConnA_sorted[i].length()-1)
-			{
-				if (m_vertConnA_sorted[i].length() > 1)
-				{
-					MGlobal::displayInfo(MString() + m_vertConnA_sorted[i][z] + " -> " +  m_vertConnA_sorted[i][z+1] );
-				}
-				
-			}
+	//		if (z < m_vertConnA_sorted[i].length()-1)
+	//		{
+	//			if (m_vertConnA_sorted[i].length() > 1)
+	//			{
+	//				MGlobal::displayInfo(MString() + m_vertConnA_sorted[i][z] + " -> " +  m_vertConnA_sorted[i][z+1] );
+	//			}
+	//			
+	//		}
 
-		}
-	}
+	//	}
+	//}
 
 						//	mItVert.setIndex(polygonVerts[j],previndex);
 						//mItVert.getConnectedVertices(connVertices);

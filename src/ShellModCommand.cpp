@@ -694,6 +694,20 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		MPlug p_shellModMultiNode_outMesh = fnDepShellMod.findPlug( "outMesh" );
 		MPlug p_shellModMultiMesh_inMesh = fnDepshellModOutputMeshShape.findPlug( "inMesh" );
 
+		
+		// Set default ramp
+		const float f_ramp_values[] = { 0.0, 1.0, 1.0, 0.0 };
+		const float f_ramp_positions[] = { 0.0, 0.1, 0.9, 1.0 };
+		const int f_ramp_interps[] = { 1,1,1,1 };
+		MFloatArray def_ramp_values(f_ramp_values,4);
+		MFloatArray def_ramp_positions(f_ramp_positions, 4);
+		MIntArray def_ramp_interps(f_ramp_interps, 4);
+
+		MPlug a_curveAttribute = fnDepShellMod.findPlug("profileRamp", status);
+		MRampAttribute a_Ramp(a_curveAttribute);
+		
+		a_Ramp.setRamp(def_ramp_values, def_ramp_positions,def_ramp_interps);
+
 		MGlobal::displayInfo(MString() + "[Shellmod] connected: " + p_shellModMultiNode_outMesh.name() + " -> " + p_shellModMultiMesh_inMesh.name()  );
 
 		status = m_DGMod.connect( p_shellModMultiNode_outMesh, p_shellModMultiMesh_inMesh );

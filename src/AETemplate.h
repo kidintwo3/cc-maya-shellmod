@@ -378,14 +378,6 @@ MString mel_AETemplate()
 
 
 
-
-
-
-
-
-
-
-
 	return s_aeTemplate;
 
 }
