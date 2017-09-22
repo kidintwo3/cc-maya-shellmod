@@ -104,3 +104,6 @@ $RECYCLE.BIN/
 CMakeFiles/
 *.filters
 *.cache
+*.ilk
+*.db
+*.opendb

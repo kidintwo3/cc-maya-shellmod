@@ -10,10 +10,17 @@
 #define SHELLMODCOMMAND_H
 
 #ifdef __linux__ 
-    #include <maya/MArgDatabase.h>
+    
+#if MAYA_API_VERSION >= 20180000
+	#include <maya/MCppCompat.h>
+#endif
+#include <maya/MArgDatabase.h>
 #else
     #include <maya/MArgDataBase.h>
 #endif
+
+
+
 
 
 #include <maya/MDagPath.h>

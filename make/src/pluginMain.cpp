@@ -6,36 +6,38 @@
 //  Copyright (c) 2015. Creative Case. All rights reserved.
 //
 
+
 #include "ShellModNode.h"
 #include "ShellModCommand.h"
 #include "AETemplate.h"
 #include "icons.h"
 
 
+
 #include <maya/MFnPlugin.h>
 
-MStatus initializePlugin( MObject obj )
+MStatus initializePlugin(MObject obj)
 {
 	MStatus status;
 
-	
+
 
 	//MGlobal::executeCommand( mel_deleteShelf() );
 
 
-	if( !std::getenv("SHELLMOD_REBUILDSHELF") )
+	if (!std::getenv("SHELLMOD_REBUILDSHELF"))
 	{
 		icons_data_write();
-		MGlobal::executeCommand( mel_createShelf() );
-		MGlobal::executeCommand( mel_AETemplate() );
+		MGlobal::executeCommand(mel_createShelf());
+		MGlobal::executeCommand(mel_AETemplate());
 	}
 
 
 
-	MFnPlugin fnPlugin( obj, "Creative Case", "2.05", "Any" );
+	MFnPlugin fnPlugin(obj, "Creative Case", "2.05", "Any");
 
-	status = fnPlugin.registerCommand( "shellModCommand", ShellModCommand::creator, ShellModCommand::newSyntax );
-	CHECK_MSTATUS_AND_RETURN_IT( status );
+	status = fnPlugin.registerCommand("shellModCommand", ShellModCommand::creator, ShellModCommand::newSyntax);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 	status = fnPlugin.registerNode("shellModNode", shellModNode::id, shellModNode::creator, shellModNode::initialize);
@@ -52,7 +54,7 @@ MStatus initializePlugin( MObject obj )
 }
 
 
-MStatus uninitializePlugin( MObject obj )
+MStatus uninitializePlugin(MObject obj)
 {
 	MStatus status;
 
@@ -64,10 +66,10 @@ MStatus uninitializePlugin( MObject obj )
 
 
 
-	MFnPlugin fnPlugin( obj );
+	MFnPlugin fnPlugin(obj);
 
-	status = fnPlugin.deregisterCommand( "shellModCommand" );
-	CHECK_MSTATUS_AND_RETURN_IT( status );
+	status = fnPlugin.deregisterCommand("shellModCommand");
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = fnPlugin.deregisterNode(shellModNode::id);
 	CHECK_MSTATUS_AND_RETURN_IT(status);

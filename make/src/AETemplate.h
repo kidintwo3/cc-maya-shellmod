@@ -9,6 +9,13 @@
 #ifndef MELSCRIPTS_H
 #define MELSCRIPTS_H
 
+#ifdef __linux__ 
+#if MAYA_API_VERSION >= 20180000
+#include <maya/MCppCompat.h>
+#endif
+#endif
+
+
 #include <maya/MString.h>
 
 

@@ -1,6 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#ifdef __linux__ 
+#if MAYA_API_VERSION >= 20180000
+#include <maya/MCppCompat.h>
+#endif
+#endif
+
 #include <string>
 #include <fstream>
 #include <vector>

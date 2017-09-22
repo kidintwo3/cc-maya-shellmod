@@ -1,4 +1,4 @@
-versions=('2016', '2016.5', '2017', '2018')
+versions=('2016' '2016.5' '2017' '2018')
 op_system='linux'
 plugin_name='shellMod'
 make_dir='/home/none/Desktop/ShellMod/make/build/'$op_system'/'

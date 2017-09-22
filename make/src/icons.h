@@ -1,6 +1,14 @@
 #ifndef ICONS_H
 #define ICONS_H
 
+#if MAYA_API_VERSION >= 20180000
+
+#ifdef __linux__ 
+#include <maya/MCppCompat.h>
+#endif
+
+#endif
+
 void compileImagePNGtoBinary(char * filename, char * output){
 
 	FILE * file = fopen(filename, "rb");
