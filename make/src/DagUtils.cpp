@@ -10,11 +10,6 @@
 
 
 
-
-
-
-
-
 MSelectionList listNodeType(MFn::Type mfn_nodeType)
 {
     MSelectionList list;

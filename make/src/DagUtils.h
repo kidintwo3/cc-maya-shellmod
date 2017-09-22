@@ -9,13 +9,7 @@
 #ifndef DAGUTILS_H
 #define DAGUTILS_H
 
-#if MAYA_API_VERSION >= 20180000
 
-#ifdef __linux__ 
-#include <maya/MCppCompat.h>
-#endif
-
-#endif
 
 #include <maya/MSelectionList.h>
 #include <maya/MItSelectionList.h>
