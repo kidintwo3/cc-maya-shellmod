@@ -114,6 +114,7 @@ public:
 	static MObject				aReverseNormals;
 	static MObject				aStraightenEdges;
 	static MObject				aStraightenEdgesAngle;
+	static MObject				aBevelEdgesAngle;
 	static MObject				aSmoothSubdiv;
 
 	static MObject				aBulge;
@@ -126,6 +127,8 @@ public:
 	static MObject				aUVOffsetUAutoPadding;
     
     static MObject				aPresetFolderPath;
+
+	static MObject				aOutputComponents;
 
 	//static MObject				aDisplaySmoothMesh;
 
@@ -145,6 +148,9 @@ private:
 	static void					preDuplicateCB(void* data);
 	static void					postDuplicateCB(void* data);
 	static void					nodeAddedCB(MObject& node, void* clientData);
+
+	static void					createChamfer(MObject& o_mergedMesh, MFnMesh &meshFn, MItMeshVertex &vIt, int vertexIndex, float offset);
+	static float						getNormalizedFactorOfEdge(MItMeshEdge& itEdge, int edge, float distance, int originVertex);
 
 	MStatus						setupConneCtions(MPlug &inMeshPlug, MPlug &outMeshPlug);
 	MStatus						doLcCheck();
@@ -182,6 +188,7 @@ private:
 	bool						m_overrideShading;
 	bool						m_deleteShellMod;
 	double						m_weight;
+	double						m_bevelEdgesAngle;
 	int							m_segments;
 	bool						m_capTop;
 	bool						m_capBottom;
@@ -214,6 +221,10 @@ private:
 	MMatrixArray				m_inMeshMatrixArray;
 
 	int							m_isSmoothed;
+
+	// Bevel
+
+	MIntArray					m_bevelEdgeArray;
 
 
 

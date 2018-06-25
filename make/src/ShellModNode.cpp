@@ -23,12 +23,16 @@ MObject		shellModNode::aProfilePresets;
 MObject		shellModNode::aSmoothSubdiv;
 MObject		shellModNode::aBulge;
 MObject		shellModNode::aCurveRamp;
+MObject		shellModNode::aBevelEdgesAngle;
+
 //MObject		shellModNode::aShadingOverride;
 
 MObject		shellModNode::aUVOffsetU;
 MObject		shellModNode::aUVOffsetV;
 MObject		shellModNode::aUVOffsetUAuto;
 MObject		shellModNode::aUVOffsetUAutoPadding;
+
+MObject		shellModNode::aOutputComponents;
 
 MObject		shellModNode::aDisableBaseMeshOverride;
 
@@ -57,10 +61,10 @@ MStatus shellModNode::checkPresetFolder()
 	{
 		string line;
 
-		ifstream myfile (s_path.asChar());
+		ifstream myfile(s_path.asChar());
 		if (myfile.is_open())
 		{
-			while ( getline (myfile,line) )
+			while (getline(myfile, line))
 			{
 				istringstream iss(line);
 				s_readPluginPath = line.c_str();
@@ -68,7 +72,7 @@ MStatus shellModNode::checkPresetFolder()
 
 			myfile.close();
 
-			MGlobal::displayInfo(MString() + "[ShellMod] pshellMod.cfg path: " + s_readPluginPath );
+			MGlobal::displayInfo(MString() + "[ShellMod] pshellMod.cfg path: " + s_readPluginPath);
 			o_presetPath.setRawFullName(s_readPluginPath);
 
 
@@ -77,7 +81,7 @@ MStatus shellModNode::checkPresetFolder()
 
 		if (s_readPluginPath.length() == 0) {
 
-			MGlobal::displayWarning(MString() + "[ShellMod] pshellMod.cfg is empty!" );
+			MGlobal::displayWarning(MString() + "[ShellMod] pshellMod.cfg is empty!");
 		}
 
 		return MStatus::kSuccess;
@@ -157,15 +161,15 @@ void shellModNode::postConstructor()
 	m_callbackIDs.append(callbackID);
 
 	// duplicate pre callback
-	callbackID = MModelMessage::addBeforeDuplicateCallback( shellModNode::preDuplicateCB, this );
+	callbackID = MModelMessage::addBeforeDuplicateCallback(shellModNode::preDuplicateCB, this);
 	m_callbackIDs.append(callbackID);
 
 	// duplicate post callback
-	callbackID = MModelMessage::addAfterDuplicateCallback( shellModNode::postDuplicateCB, this );
+	callbackID = MModelMessage::addAfterDuplicateCallback(shellModNode::postDuplicateCB, this);
 	m_callbackIDs.append(callbackID);
 
 	// object added to scene callback
-	callbackID = MDGMessage::addNodeAddedCallback( shellModNode::nodeAddedCB, "dagNode", this );
+	callbackID = MDGMessage::addNodeAddedCallback(shellModNode::nodeAddedCB, "dagNode", this);
 	m_callbackIDs.append(callbackID);
 
 
@@ -177,12 +181,12 @@ void shellModNode::postConstructor()
 
 }
 
-void shellModNode::nodeAddedCB( MObject& node, void* clientData  )
+void shellModNode::nodeAddedCB(MObject& node, void* clientData)
 {
 
 	if (m_isDuplicating)
 	{
-		MFnDagNode mfDgN( node );
+		MFnDagNode mfDgN(node);
 		MPlug p_out_overrideEnabled = mfDgN.findPlug("overrideEnabled", false);
 		p_out_overrideEnabled.setBool(false);
 
@@ -192,28 +196,28 @@ void shellModNode::nodeAddedCB( MObject& node, void* clientData  )
 
 }
 
-void shellModNode::preDuplicateCB( void* clientData )
+void shellModNode::preDuplicateCB(void* clientData)
 {
 	m_isDuplicating = true;
 	//MGlobal::displayWarning("preDuplicateCB!!");
 
 }
 
-void shellModNode::postDuplicateCB( void* clientData )
+void shellModNode::postDuplicateCB(void* clientData)
 {
 	m_isDuplicating = false;
 	//MGlobal::displayWarning("Duplicating!!");
 
 }
 
-void shellModNode::aboutToDeleteCB(MObject& node, MDGModifier& modifier, void* pUserPtr) 
+void shellModNode::aboutToDeleteCB(MObject& node, MDGModifier& modifier, void* pUserPtr)
 {
 	MFnDependencyNode nodeFn(node);
 	MGlobal::displayInfo(MString("[ShellMod] About to delete callback for node: ") + nodeFn.name());
 
 
 	// Find the output mesh connected to the node
-	MPlug worldP = nodeFn.findPlug( "outMesh" );
+	MPlug worldP = nodeFn.findPlug("outMesh");
 
 	MFnDagNode mfDgN(worldP.node());
 
@@ -230,12 +234,12 @@ void shellModNode::aboutToDeleteCB(MObject& node, MDGModifier& modifier, void* p
 		MPlug p_out_overrideEnabled = mfDgN.findPlug("overrideEnabled", false);
 		p_out_overrideEnabled.setBool(false);
 
-		MGlobal::displayInfo(MString("[ShellMod] Deleting / Setting output mesh overrides: ") + mfDgN.partialPathName() );
+		MGlobal::displayInfo(MString("[ShellMod] Deleting / Setting output mesh overrides: ") + mfDgN.partialPathName());
 	}
 
 	else
 	{
-		MGlobal::displayInfo(MString()+ "[ShellMod] Deleting / No connection, or wrong connection to output mesh: " );
+		MGlobal::displayInfo(MString() + "[ShellMod] Deleting / No connection, or wrong connection to output mesh: ");
 	}
 
 }
@@ -326,155 +330,155 @@ void shellModNode::profilePresets(const int &m_profilePreset)
 	if (m_profilePreset == 1)
 	{
 
-		float pos [6] = { 0.0f,0.005f,0.01f,0.99f,0.995f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.005f,0.01f,0.99f,0.995f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 2)
 	{
-		float pos [6] = { 0.0f,0.01f,0.02f,0.98f,0.99f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.01f,0.02f,0.98f,0.99f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 3)
 	{
-		float pos [6] = { 0.0f,0.025f,0.05f,0.95f,0.975f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values =MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.025f,0.05f,0.95f,0.975f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 4)
 	{
-		float pos [6] = { 0.0f,0.05f,0.1f,0.9f,0.95f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values =MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.05f,0.1f,0.9f,0.95f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 5)
 	{
-		float pos [6] = { 0.0f,0.1f,0.2f,0.8f,0.9f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.1f,0.2f,0.8f,0.9f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 6)
 	{
-		float pos [6] = { 0.0f,0.15f,0.3f,0.7f,0.85f,1.0f };
-		float val [6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values =MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[6] = { 0.0f,0.15f,0.3f,0.7f,0.85f,1.0f };
+		float val[6] = { 0.0f,0.95f,1.0f,1.0f,0.95f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 7)
 	{
-		float pos [22] = { 0.0f,0.001f,0.02f,0.03f,0.04f,0.13f,0.14f,0.15f,0.17f,0.17f,0.18f,0.82f,0.83f,0.831558f,0.85f,0.86f,0.87f,0.96f,0.97f,0.98f,0.999f,1.0f  };
-		float val [22] = { 0.0f,0.04f,0.98f,1.0f,1.0f,1.0f,1.0f,0.98f,0.0f,0.04f,0.0f,0.0f,0.0f,0.04f,0.98f,1.0f,1.0f,1.0f,1.0f,0.98f,0.04f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[22] = { 0.0f,0.001f,0.02f,0.03f,0.04f,0.13f,0.14f,0.15f,0.17f,0.17f,0.18f,0.82f,0.83f,0.831558f,0.85f,0.86f,0.87f,0.96f,0.97f,0.98f,0.999f,1.0f };
+		float val[22] = { 0.0f,0.04f,0.98f,1.0f,1.0f,1.0f,1.0f,0.98f,0.0f,0.04f,0.0f,0.0f,0.0f,0.04f,0.98f,1.0f,1.0f,1.0f,1.0f,0.98f,0.04f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 8)
 	{
-		float pos [12] = { 0.0f,0.000665779f,0.011984f,0.0312916f,0.331558f,0.52996f,0.705726f,0.864847f,0.948069f,0.98735f,0.998003f,1.0f  };
-		float val [12] = { 0.0f,0.953618f,0.988868f,0.998145f,1.0f,0.96846f,0.858998f,0.653061f,0.42115f,0.179963f,0.038961f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[12] = { 0.0f,0.000665779f,0.011984f,0.0312916f,0.331558f,0.52996f,0.705726f,0.864847f,0.948069f,0.98735f,0.998003f,1.0f };
+		float val[12] = { 0.0f,0.953618f,0.988868f,0.998145f,1.0f,0.96846f,0.858998f,0.653061f,0.42115f,0.179963f,0.038961f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 9)
 	{
-		float pos [12] = { 0.0f,0.0186418f,0.15f,0.165f,0.18f,0.2f,0.8f,0.82f,0.835f,0.85f,0.98f,1.0f };
-		float val [12] = { 0.0f,0.12f,0.95f,0.985f,1.0f,1.0f,1.0f,1.0f,0.985f,0.95f,0.12f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[12] = { 0.0f,0.0186418f,0.15f,0.165f,0.18f,0.2f,0.8f,0.82f,0.835f,0.85f,0.98f,1.0f };
+		float val[12] = { 0.0f,0.12f,0.95f,0.985f,1.0f,1.0f,1.0f,1.0f,0.985f,0.95f,0.12f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
-	if (m_profilePreset ==	10)
+	if (m_profilePreset == 10)
 	{
-		float pos [18] = { 0.0f,0.005f,0.01f,0.025f,0.14f,0.15f,0.16f,0.165f,0.18f,0.82f,0.835f,0.84f,0.85f,0.86f,0.975f,0.99f,0.995f,1.0f  };
-		float val [18] = { 0.0f,0.16f,0.19f,0.2f,0.2f,0.2f,0.95f,0.985f,1.0f,1.0f,0.985f,0.959184f,0.2f,0.2f,0.2f,0.19f,0.16f,0.0f };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[18] = { 0.0f,0.005f,0.01f,0.025f,0.14f,0.15f,0.16f,0.165f,0.18f,0.82f,0.835f,0.84f,0.85f,0.86f,0.975f,0.99f,0.995f,1.0f };
+		float val[18] = { 0.0f,0.16f,0.19f,0.2f,0.2f,0.2f,0.95f,0.985f,1.0f,1.0f,0.985f,0.959184f,0.2f,0.2f,0.2f,0.19f,0.16f,0.0f };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 11)
 	{
-		float pos [21] = { 0,0.026,0.037,0.0585,0.19,0.38,0.63,0.795,0.815,0.82,0.822672,0.825,0.83,0.95,0.957,0.959,0.959514,0.96,0.973279,0.98,1    };
-		float val [21] = { 0,0.06,0.073,0.1,0.25,0.46,0.73,0.89,0.9,0.91,0.92757,0.996,1,0.998,0.995,0.98,0.92757,0.9,0.899533,0.895,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[21] = { 0,0.026,0.037,0.0585,0.19,0.38,0.63,0.795,0.815,0.82,0.822672,0.825,0.83,0.95,0.957,0.959,0.959514,0.96,0.973279,0.98,1 };
+		float val[21] = { 0,0.06,0.073,0.1,0.25,0.46,0.73,0.89,0.9,0.91,0.92757,0.996,1,0.998,0.995,0.98,0.92757,0.9,0.899533,0.895,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 12)
 	{
-		float pos [12] = { 0,0.01,0.0199734,0.47,0.48,0.49,0.51,0.52,0.53,0.98,0.99,1 };
-		float val [12] = { 0,0.03,0.05,0.98,1,1,1,1,0.98,0.05,0.03,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[12] = { 0,0.01,0.0199734,0.47,0.48,0.49,0.51,0.52,0.53,0.98,0.99,1 };
+		float val[12] = { 0,0.03,0.05,0.98,1,1,1,1,0.98,0.05,0.03,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 13)
 	{
-		float pos [16] = { 0,0.00732357,0.0173103,0.275,0.285,0.305,0.33,0.35,0.65,0.67,0.695,0.715,0.725,0.9827,0.9927,1  };
-		float val [16] = { 0,0.05,0.09,0.91,0.94,0.98,1,1,1,1,0.98,0.94,0.91,0.09,0.05,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[16] = { 0,0.00732357,0.0173103,0.275,0.285,0.305,0.33,0.35,0.65,0.67,0.695,0.715,0.725,0.9827,0.9927,1 };
+		float val[16] = { 0,0.05,0.09,0.91,0.94,0.98,1,1,1,1,0.98,0.94,0.91,0.09,0.05,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 14)
 	{
-		float pos [21] = { 0,0.00133156,0.00532623,0.0133156,0.033,0.06,0.095,0.14,0.19,0.24,0.29,0.8,0.85,0.89,0.92,0.95,0.9747,0.98735,0.991345,0.996671,1   };
-		float val [21] = { 0,0.235622,0.423006,0.560297,0.7,0.8,0.9,0.96,0.99,1,1,1,1,0.995,0.98,0.94,0.862709,0.747681,0.601113,0.397032,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[21] = { 0,0.00133156,0.00532623,0.0133156,0.033,0.06,0.095,0.14,0.19,0.24,0.29,0.8,0.85,0.89,0.92,0.95,0.9747,0.98735,0.991345,0.996671,1 };
+		float val[21] = { 0,0.235622,0.423006,0.560297,0.7,0.8,0.9,0.96,0.99,1,1,1,1,0.995,0.98,0.94,0.862709,0.747681,0.601113,0.397032,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 15)
 	{
-		float pos [27] = { 0,0.00133156,0.013,0.036,0.07,0.115,0.17,0.235,0.315,0.41,0.515,0.63,0.72,0.795,0.815,0.82,0.830892,0.846205,0.86285,0.90213,0.945406,0.964048,0.973369,0.98,0.98269,0.998,1    };
-		float val [27] = { 0,0.044484,0.19,0.32,0.44,0.54,0.625,0.695,0.76,0.81,0.85,0.877,0.886,0.89,0.9,0.91,0.939502,0.97331,0.991103,1,0.992883,0.97153,0.939502,0.895,0.86121,0.0777,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[27] = { 0,0.00133156,0.013,0.036,0.07,0.115,0.17,0.235,0.315,0.41,0.515,0.63,0.72,0.795,0.815,0.82,0.830892,0.846205,0.86285,0.90213,0.945406,0.964048,0.973369,0.98,0.98269,0.998,1 };
+		float val[27] = { 0,0.044484,0.19,0.32,0.44,0.54,0.625,0.695,0.76,0.81,0.85,0.877,0.886,0.89,0.9,0.91,0.939502,0.97331,0.991103,1,0.992883,0.97153,0.939502,0.895,0.86121,0.0777,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 
 	if (m_profilePreset == 16)
 	{
-		float pos [42] = { 0,0.00466045,0.025,0.035,0.0875,0.1,0.125,0.135,0.19,0.2,0.225,0.235,0.29,0.3,0.325,0.335,0.39,0.4,0.425,0.435,0.49,0.5,0.525,0.535,0.59,0.6,0.625,0.637,0.69,0.7,0.725,0.735,0.79,0.8,0.825,0.835,0.89,0.9,0.925,0.935,0.99,1     };
-		float val [42] = { 0,0.200371,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[42] = { 0,0.00466045,0.025,0.035,0.0875,0.1,0.125,0.135,0.19,0.2,0.225,0.235,0.29,0.3,0.325,0.335,0.39,0.4,0.425,0.435,0.49,0.5,0.525,0.535,0.59,0.6,0.625,0.637,0.69,0.7,0.725,0.735,0.79,0.8,0.825,0.835,0.89,0.9,0.925,0.935,0.99,1 };
+		float val[42] = { 0,0.200371,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0,0.98,1,1,0.98,0,0,0,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 17)
 	{
-		float pos [19] = { 0,0.00771605,0.153549,0.1666,0.177469,0.324074,0.3333,0.341821,0.486883,0.5,0.511574,0.656636,0.666,0.676698,0.819444,0.833,0.844136,0.993056,1      };
-		float val [19] = { 0,0.05,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0.05,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[19] = { 0,0.00771605,0.153549,0.1666,0.177469,0.324074,0.3333,0.341821,0.486883,0.5,0.511574,0.656636,0.666,0.676698,0.819444,0.833,0.844136,0.993056,1 };
+		float val[19] = { 0,0.05,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0.05,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 18)
 	{
-		float pos [50] = { 0,0.000665779,0.0153129,0.0399467,0.0446072,0.0499334,0.0685752,0.0732357,0.0778961,0.0792277,0.0905459,0.0905459,0.0932091,0.0998668,0.118509,0.123835,0.127164,0.128495,0.148469,0.149134,0.150466,0.156458,0.173103,0.177097,0.181092,0.183089,0.193742,0.194407,0.195073,0.202397,0.221039,0.227031,0.229694,0.231691,0.245672,0.247004,0.24767,0.25233,0.275633,0.280959,0.283622,0.284953,0.3,0.305593,0.306258,0.320905,0.95739,0.9747,0.992676,1   };
-		float val [50] = { 0,0.25603,0.788497,0.8,0.961039,1,1,0.962894,0.829314,0.8,0.8,0.831169,0.961039,1,1,0.959184,0.834879,0.8,0.8,0.836735,0.962894,1,1,0.96475,0.840445,0.8,0.8,0.840445,0.962894,1,1,0.96475,0.842301,0.8,0.8,0.844156,0.962894,1,1,0.962894,0.844156,0.8,0.8,0.773655,0.666048,0.664193,0.667904,0.667904,0.649351,0.606679 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[50] = { 0,0.000665779,0.0153129,0.0399467,0.0446072,0.0499334,0.0685752,0.0732357,0.0778961,0.0792277,0.0905459,0.0905459,0.0932091,0.0998668,0.118509,0.123835,0.127164,0.128495,0.148469,0.149134,0.150466,0.156458,0.173103,0.177097,0.181092,0.183089,0.193742,0.194407,0.195073,0.202397,0.221039,0.227031,0.229694,0.231691,0.245672,0.247004,0.24767,0.25233,0.275633,0.280959,0.283622,0.284953,0.3,0.305593,0.306258,0.320905,0.95739,0.9747,0.992676,1 };
+		float val[50] = { 0,0.25603,0.788497,0.8,0.961039,1,1,0.962894,0.829314,0.8,0.8,0.831169,0.961039,1,1,0.959184,0.834879,0.8,0.8,0.836735,0.962894,1,1,0.96475,0.840445,0.8,0.8,0.840445,0.962894,1,1,0.96475,0.842301,0.8,0.8,0.844156,0.962894,1,1,0.962894,0.844156,0.8,0.8,0.773655,0.666048,0.664193,0.667904,0.667904,0.649351,0.606679 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 	if (m_profilePreset == 19)
 	{
-		float pos [14] = { 0,0.008,0.0655864,0.075,0.09,0.28,0.29,0.3,0.365,0.372685,0.4,0.969136,0.992284,1 };
-		float val [14] = { 0,0.1,0.96,0.99,1,0.998145,0.99,0.96,0.16,0.1,0.1,0.1,0.0538033,0 };
-		m_curve_positions = MFloatArray( pos, (sizeof(pos)/sizeof(*pos)) );
-		m_curve_values = MFloatArray( val, (sizeof(val)/sizeof(*val)));
+		float pos[14] = { 0,0.008,0.0655864,0.075,0.09,0.28,0.29,0.3,0.365,0.372685,0.4,0.969136,0.992284,1 };
+		float val[14] = { 0,0.1,0.96,0.99,1,0.998145,0.99,0.96,0.16,0.1,0.1,0.1,0.0538033,0 };
+		m_curve_positions = MFloatArray(pos, (sizeof(pos) / sizeof(*pos)));
+		m_curve_values = MFloatArray(val, (sizeof(val) / sizeof(*val)));
 	}
 
 }
@@ -568,6 +572,10 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 	m_disableBaseMeshOverride = data.inputValue(aDisableBaseMeshOverride, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	// Bevel
+
+	m_bevelEdgesAngle = data.inputValue(aBevelEdgesAngle, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 	return MStatus::kSuccess;
@@ -591,7 +599,7 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 
 
 
-	MArrayDataHandle h_inMeshes = data.inputArrayValue( aInMesh );
+	MArrayDataHandle h_inMeshes = data.inputArrayValue(aInMesh);
 
 	for (unsigned int i = 0; i < h_inMeshes.elementCount(); i++)
 	{
@@ -605,7 +613,7 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 			m_inMeshArray.append(m_inMesh);
 
 			MMatrix trMat = h_inMeshes.inputValue(&status).geometryTransformMatrix();
-			CHECK_MSTATUS_AND_RETURN_IT( status );
+			CHECK_MSTATUS_AND_RETURN_IT(status);
 
 			m_inMeshMatrixArray.append(trMat);
 
@@ -644,7 +652,7 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 		m_crease_edge_ids.clear();
 		m_crease_edge_data.clear();
 
-		MFnMesh meshFn_iter(m_inMeshArray[i]); 
+		MFnMesh meshFn_iter(m_inMeshArray[i]);
 
 		// Store the original meshes edge creases
 		meshFn_iter.getCreaseVertices(m_crease_vert_ids, m_crease_vert_data);
@@ -778,8 +786,8 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 		}
 	}
 
-	if (isSmooth) { m_isSmoothed = 2;}
-	else {m_isSmoothed = 0;}
+	if (isSmooth) { m_isSmoothed = 2; }
+	else { m_isSmoothed = 0; }
 
 
 	m_numInputMeshes = m_inMeshArray.length();
@@ -809,7 +817,7 @@ MStatus shellModNode::mergeInputMeshes()
 		i_numPolygons[m] = mfnMesh.numPolygons();
 
 
-		mfnMesh.getPoints(i_vertexArray[m],MSpace::kWorld);
+		mfnMesh.getPoints(i_vertexArray[m], MSpace::kWorld);
 		mfnMesh.getVertices(i_polygonCounts[m], i_polygonConnects[m]);
 
 
@@ -817,21 +825,21 @@ MStatus shellModNode::mergeInputMeshes()
 
 	// Allocate memory for vector
 	int id = 0;
-	int len_o_vertexArray=0;
-	int len_o_polygonCounts=0;
-	int len_o_polygonConnects=0;
+	int len_o_vertexArray = 0;
+	int len_o_polygonCounts = 0;
+	int len_o_polygonConnects = 0;
 
 	for (int m = 0; m < m_numInputMeshes; m++)
 	{
 		id = m;
 		for (unsigned v = 0; v < i_vertexArray[id].length(); v++) {
-			len_o_vertexArray+=1;
+			len_o_vertexArray += 1;
 		}
 		for (unsigned v = 0; v < i_polygonCounts[id].length(); v++) {
-			len_o_polygonCounts+=1;
+			len_o_polygonCounts += 1;
 		}
 		for (unsigned v = 0; v < i_polygonConnects[id].length(); v++) {
-			len_o_polygonConnects+=1;
+			len_o_polygonConnects += 1;
 		}
 
 	}
@@ -873,7 +881,7 @@ MStatus shellModNode::mergeInputMeshes()
 		for (int v = 0; v < i_vertexArray[id].length(); v++) {
 			MFloatPoint currP = i_vertexArray[id][v];
 
-			MFloatPoint currentPoint( currP.x, currP.y, currP.z, currP.w  );
+			MFloatPoint currentPoint(currP.x, currP.y, currP.z, currP.w);
 
 
 
@@ -883,12 +891,12 @@ MStatus shellModNode::mergeInputMeshes()
 
 			//currentPoint += m_posVecArray[m];
 
-			o_vertexArray.set(currentPoint,v + idOffset );
+			o_vertexArray.set(currentPoint, v + idOffset);
 		}
 #pragma omp parallel for
 		// polygonCounts
 		for (int v = 0; v < i_polygonCounts[id].length(); v++) {
-			o_polygonCounts.set(i_polygonCounts[id][v], v+polycOffset);
+			o_polygonCounts.set(i_polygonCounts[id][v], v + polycOffset);
 		}
 
 
@@ -896,7 +904,7 @@ MStatus shellModNode::mergeInputMeshes()
 #pragma omp parallel for
 		// polygonConnects
 		for (int v = 0; v < i_polygonConnects[id].length(); v++) {
-			o_polygonConnects.set(i_polygonConnects[id][v] +  idOffset,  v + polyConnOffset );
+			o_polygonConnects.set(i_polygonConnects[id][v] + idOffset, v + polyConnOffset);
 
 
 		}
@@ -924,8 +932,8 @@ MStatus shellModNode::mergeInputMeshes()
 
 
 		MIntArray revFCA;
-		int co = o_polygonCounts.length() -1;
-		for (unsigned i = 0; i <  o_polygonCounts.length() ; i++)
+		int co = o_polygonCounts.length() - 1;
+		for (unsigned i = 0; i < o_polygonCounts.length(); i++)
 		{
 			revFCA.append(o_polygonCounts[co]);
 			co -= 1;
@@ -933,24 +941,24 @@ MStatus shellModNode::mergeInputMeshes()
 
 
 		MIntArray revPCA;
-		co = o_polygonConnects.length() -1;
-		for (unsigned i = 0; i <  o_polygonConnects.length() ; i++)
+		co = o_polygonConnects.length() - 1;
+		for (unsigned i = 0; i < o_polygonConnects.length(); i++)
 		{
 			revPCA.append(o_polygonConnects[co]);
 			co -= 1;
 		}
 
 		MIntArray revUVCA;
-		co = o_uvCountsA.length() -1;
-		for (unsigned i = 0; i <  o_uvCountsA.length() ; i++)
+		co = o_uvCountsA.length() - 1;
+		for (unsigned i = 0; i < o_uvCountsA.length(); i++)
 		{
 			revUVCA.append(o_uvCountsA[co]);
 			co -= 1;
 		}
 
 		MIntArray revUVIDA;
-		co = o_uvIdsA.length() -1;
-		for (unsigned i = 0; i <  o_uvIdsA.length() ; i++)
+		co = o_uvIdsA.length() - 1;
+		for (unsigned i = 0; i < o_uvIdsA.length(); i++)
 		{
 			revUVIDA.append(o_uvIdsA[co]);
 			co -= 1;
@@ -984,7 +992,7 @@ MStatus shellModNode::mergeInputMeshes()
 
 
 
-MStatus shellModNode::generateUVs(){
+MStatus shellModNode::generateUVs() {
 	MStatus status;
 
 
@@ -1021,7 +1029,7 @@ MStatus shellModNode::generateUVs(){
 		MFnMesh mFnA(m_inMeshArray[i]);
 
 		mFnA.getCurrentUVSetName(defaultUVSetName);
-		mFnA.getUVs(in_uArray,in_vArray);
+		mFnA.getUVs(in_uArray, in_vArray);
 		mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
 
 		//v_defaultUVSetName[i] = defaultUVSetName;
@@ -1036,10 +1044,10 @@ MStatus shellModNode::generateUVs(){
 	// Calculate the outpout array size
 
 	int id = 0;
-	int len_uArray=0;
-	int len_vArray=0;
-	int len_uvCounts=0;
-	int len_uvIds=0;
+	int len_uArray = 0;
+	int len_vArray = 0;
+	int len_uvCounts = 0;
+	int len_uvIds = 0;
 	for (int m = 0; m < m_numInputMeshes; m++)
 	{
 		id = m;
@@ -1133,20 +1141,20 @@ MStatus shellModNode::storeProfileCurveData()
 	//MRampAttribute curveAttribute(this->thisMObject(), aCurveRamp, &status);
 	//CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	a_curveAttribute.getEntries(m_curve_indices, m_curve_positions, m_curve_values, m_curve_interps );
+	a_curveAttribute.getEntries(m_curve_indices, m_curve_positions, m_curve_values, m_curve_interps);
 
 	// Bubble Sort array
 
 	float swapHolder_pos = -1.0;
 	float swapHolder_val = -1.0;
-	int aend = m_curve_positions.length()-1;
+	int aend = m_curve_positions.length() - 1;
 	int alength = aend;
 
-	for (int c = alength-1; c > 0; c--)
+	for (int c = alength - 1; c > 0; c--)
 	{
 		for (int i = 0; i < aend; i++)
 		{
-			if (m_curve_positions[i] > m_curve_positions[ i + 1 ])
+			if (m_curve_positions[i] > m_curve_positions[i + 1])
 			{
 				swapHolder_pos = m_curve_positions[i + 1];
 				m_curve_positions[i + 1] = m_curve_positions[i];
@@ -1158,7 +1166,7 @@ MStatus shellModNode::storeProfileCurveData()
 			}
 		}
 
-		aend --;
+		aend--;
 	}
 
 
@@ -1173,6 +1181,70 @@ MStatus shellModNode::storeProfileCurveData()
 
 }
 
+float shellModNode::getNormalizedFactorOfEdge(MItMeshEdge& itEdge, int edge, float distance, int originVertex)
+{
+	MPoint edge0vert0, edge0vert1;
+	double length;
+	int prevIndex;
+	itEdge.setIndex(edge, prevIndex);
+	itEdge.getLength(length);
+	float factor = distance / length;
+	if (factor > 1.0)
+		factor = 1.0;
+	if (itEdge.index(1) == originVertex)
+		factor = 1 - factor;
+
+	return factor;
+
+}
+
+void shellModNode::createChamfer(MObject& o_mergedMesh, MFnMesh &meshFn, MItMeshVertex &vIt, int vertexIndex, float offset)
+{
+	MIntArray placements;
+	MIntArray edgeIDs;
+	MFloatArray edgeFactors;
+	MFloatPointArray internalPoints;
+	MIntArray edges;
+	int prevIndex;
+	MItMeshEdge itEdge(o_mergedMesh, MObject::kNullObj);
+
+	vIt.setIndex(vertexIndex, prevIndex);
+	vIt.getConnectedEdges(edges);
+	
+	
+
+	float fRadius = 0.1;
+
+	float edgeFactor0 = shellModNode::getNormalizedFactorOfEdge(itEdge, edges[0], (fRadius * offset), vertexIndex);
+	edgeFactors.append(edgeFactor0);
+	edgeIDs.append(edges[0]);
+	placements.append((int)MFnMesh::kOnEdge);
+
+	//float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge, edges[1], (fRadius * -offset), vertexIndex);
+	//edgeFactors.append(edgeFactor1);
+	//edgeIDs.append(edges[1]);
+	//placements.append((int)MFnMesh::kOnEdge);
+
+	//MFloatPoint point1(0.0f,0.0f,0.0f);
+	//internalPoints.append( point1 );
+	//MGlobal::displayInfo( MString("Edges: " )+ edges[0] );
+
+	//for (int e = 1; e < edges.length(); e++)
+	//{
+	//	//MGlobal::displayInfo( MString("Edges: " )+ edges[e] );
+	//	placements.append((int)MFnMesh::kOnEdge);
+	//	edgeIDs.append(edges[e]);
+	//	edgeFactors.append(shellModNode::getNormalizedFactorOfEdge(itEdge, edges[e], (fRadius* offset), vertexIndex));
+	//	//internalPoints.append( point1 );
+	//}
+
+	//placements.append((int)MFnMesh::kOnEdge);
+	//edgeIDs.append(edges[0]);
+	//edgeFactors.append(edgeFactor0);
+	////internalPoints.append( point1 );
+
+	meshFn.split(placements, edgeIDs, edgeFactors, internalPoints);
+}
 
 
 MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
@@ -1204,15 +1276,21 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	// --------------------------------------------------------------------------------------------------------------------
 	// COMPUTE MESH
 
+	//MObject copy_obj;
+	//mFn.copy(o_mergedMesh, copy_obj);
+	//MFnMesh mFn_copy(copy_obj);
+
+
 	// set all mesh iterators
 	MFnMesh mFn(o_mergedMesh);
+
 	MItMeshVertex  mItVert(o_mergedMesh);
 	MItMeshPolygon  mItPoly(o_mergedMesh);
-	MItMeshEdge mItEdge(o_mergedMesh);
+
 
 	MFloatVector trVec(0.0, 0.0, 0.0);
 
-	MIntArray numv;
+	MIntArray numv, vertexCountA, vertexIdListA;
 	MPointArray vertPoints, oldvertPoints, allVerts;
 
 	MIntArray polygonVerts, connVertices, connFaces;
@@ -1242,6 +1320,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	m_vertConnA.clear();
 
+	m_bevelEdgeArray.clear();
+
 	MIntArray hardVerts, hardPolys, faceIDs;
 
 	// Store all the points of the original mesh
@@ -1265,32 +1345,100 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	//
 
-	//// Chamfer corners
-	//MIntArray boundaryVerts;
-	//MIntArray edges;
+	// Chamfer corners
+	MIntArray boundaryVerts;
+	MIntArray edges;
+	
 
-	//MIntArray placements;
-	//MFloatArray edgeFactors;
-	//MFloatPointArray internalPoints;
+	MIntArray placements;
+	MFloatArray edgeFactors;
+	MFloatPointArray internalPoints;
 
-	//bool found = false;
+	bool found = false;
 
-	//for (; !mItVert.isDone(); mItVert.next())
-	//{
-	//	if (mItVert.onBoundary())
-	//	{
-
-	//		if (!found)
-	//		{
-	//			mItVert.getConnectedEdges(edges);
-
-	//			found = true;
-	//		}
+	for (; !mItVert.isDone(); mItVert.next())
+	{
 
 
-	//	}
+		int active_id = mItVert.index();
+		int prev_id = active_id;
 
-	//}
+		if (mItVert.onBoundary())
+		{
+
+
+
+			MIntArray conn_verts;
+
+			
+			mItVert.getConnectedVertices(conn_verts);
+
+
+
+			MPoint vertOrig = mItVert.position();
+			MPoint vertA;
+			MPoint vertB;
+
+			bool vertA_found = false;
+			bool vertB_found = false;
+
+			for (int i = 0; i < conn_verts.length(); i++)
+			{
+
+				MItMeshVertex  mItVert_new(o_mergedMesh);
+				mItVert_new.setIndex(conn_verts[i], active_id);
+
+				if (mItVert_new.onBoundary())
+				{
+					if (!vertA_found)
+					{
+						vertA = mItVert_new.position();
+						vertA_found = true;
+						prev_id = mItVert_new.index();
+						continue;
+					}
+
+					if (!vertB_found)
+					{
+						vertB = mItVert_new.position();
+						vertB_found = true;
+						prev_id = mItVert_new.index();
+						continue;
+					}
+
+				}
+
+			}
+
+			if (vertA_found && vertB_found)
+			{
+				MVector normal1 = vertOrig - vertA;
+				MVector normal2 = vertOrig - vertB;
+
+				double radians = normal1.angle(normal2);
+				double degrees = radians * (180.0 / M_PI);
+
+				
+
+				if (degrees >= 88 && degrees <= 92)
+				{
+					MGlobal::displayInfo(MString() + degrees + " / " + active_id);
+
+					//createChamfer(o_mergedMesh, mFn, mItVert, active_id, 1.0f);
+				
+				}
+
+			}
+
+			
+
+
+			//createChamfer(o_mergedMesh, mFn, mItVert,mItVert.index(), 1.0f);
+		}
+
+		mItVert.setIndex(active_id, prev_id);
+
+	}
 
 
 	//	placements.append(MFnMesh::kOnEdge);
@@ -1303,9 +1451,10 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	//status = mFn.split(placements, edges, edgeFactors, internalPoints);
 	//CHECK_MSTATUS(status);
-	//mFn.updateSurface();
+	mFn.updateSurface();
 
-
+	MPointArray boundaryPA;
+	MIntArray boundaryIdA;
 
 	// Store Boundary verts, and original object normals
 	for (; !mItVert.isDone(); mItVert.next())
@@ -1313,6 +1462,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		if (mItVert.onBoundary())
 		{
 			numVertsBoundary += 1;
+			boundaryPA.append(mItVert.position());
+			boundaryIdA.append(mItVert.index());
 		}
 
 		status = mItVert.getNormal(currN, MSpace::kObject);
@@ -1360,7 +1511,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	}
 
 
-	double straightEdgeRad =  ( (270.0 - m_straightEdgesAngle) * M_PI/ 180 );
+	double straightEdgeRad = ((270.0 - m_straightEdgesAngle) * M_PI / 180);
 
 	int numPoly = 0;
 	int previndex = 0;
@@ -1369,26 +1520,25 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	numPoly = mFn.numPolygons();
 
 
-	//MGlobal::displayInfo(MString() + "start ---");
 
 	for (int seg = segStart; seg < m_segments; seg++) // Iterate trough numbers of extrusions
 	{
 
-		//MGlobal::displayInfo(MString() + "---");
+
 
 		status = mFn.extrudeFaces(numv, 1, &trVec, true);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		mFn.getPoints(vertPoints, MSpace::kObject);
+		mFn.getVertices(vertexCountA, vertexIdListA);
 
 		if (seg == 1)
 		{
-			borderPolyCount = mFn.numPolygons()-(numPoly * 2);
+			borderPolyCount = mFn.numPolygons() - (numPoly * 2);
 		}
 
 		MIntArray m_vertConnA_segment;
 
-		//MGlobal::displayInfo(MString() + "seg: " + seg);
 
 		for (unsigned int i = 0; i < numv.length(); i++)
 		{
@@ -1397,7 +1547,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 			//#pragma omp parallel for
-			for ( int j = 0; j < polygonVerts.length(); j++)
+			for (int j = 0; j < polygonVerts.length(); j++)
 			{
 
 				m_vertConnA_segment.append(polygonVerts[j]);
@@ -1406,20 +1556,24 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
 				mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
 
+
+
 				currN.normalize();
+
+				MVector offVec;
 
 				if (m_autoSegments)
 				{
-					currP += -currN * ((m_curve_positions[seg] - m_curve_positions[seg-1]) * m_weight);
-
-
+					offVec = -currN * ((m_curve_positions[seg] - m_curve_positions[seg - 1]) * m_weight);
+					currP += offVec;
 				}
 
 				if (!m_autoSegments)
 				{
-
-					currP += -currN * ( m_weight / double(m_segments) ) ;
+					offVec = -currN * (m_weight / double(m_segments));
+					currP += offVec;
 				}
+
 
 				MPoint vx1 = oldPolyPointsA[i][j];
 				MPoint vx2 = currP;
@@ -1431,6 +1585,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				double ang = vec1.angle(vec2);
 				double fac = 1.0 / cos(ang);
 
+
+
 				if (m_autoSegments)
 				{
 
@@ -1438,79 +1594,14 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 					{
 
 
-						
 
 
-						if (fac >= 1.0 && fac <= straightEdgeRad )
+
+						if (fac >= 1.0 && fac <= straightEdgeRad)
 						{
-							vx2 = vx1+fac*vec1 *  (m_weight * m_curve_positions[seg]);
-
-
-							
-
-							// MGlobal::displayInfo(MString() + "vert: " + polygonVerts[j]);
-
-							//m_crease_vert_ids_extruded.append(polygonVerts[j]);
-							//m_crease_vert_data_extruded.append(1.0);
+							vx2 = vx1 + fac*vec1 *  (m_weight * m_curve_positions[seg]);
 
 						}
-						/*
-						mItVert.setIndex(polygonVerts[j],previndex);
-						mItVert.getConnectedVertices(connVertices);
-
-						bool break_loop = false;
-
-						for (int i = 0; i < connVertices.length(); i++)
-						{
-
-						for (int z = 0; z < m_crease_vert_ids.length(); z++)
-						{
-						if (connVertices[i] == m_crease_vert_ids[z])
-						{
-
-						MGlobal::displayInfo(MString() + "crease: " + m_crease_vert_ids[z]);
-
-						break_loop = true;
-						}
-
-						if (break_loop)
-						{
-						break;
-						}
-						}
-
-
-						if (break_loop)
-						{
-						break;
-						}
-
-						}
-						*/
-						//MPoint closestP;
-						//MPoint prevP = vertPoints[connVertices[0]];
-						//double prevDist;
-
-						//for (int p = 1; p < connVertices.length(); p++)
-						//{
-						//	double dist = vertPoints[connVertices[p]].distanceTo(prevP);
-
-						//	if (dist <= prevDist)
-						//	{
-						//		closestP = vertPoints[connVertices[p]];
-						//	}
-						//	prevDist = dist;
-						//	prevP = vertPoints[connVertices[p]];
-						//}
-
-
-
-						//if (vx2.distanceTo(closestP) < 0.1)
-						//{
-						//	//MGlobal::displayInfo(MString() + currP.distanceTo(closestP));
-						//	vx2 = closestP;
-						//}
-
 
 
 					}
@@ -1524,9 +1615,9 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				{
 					if (m_straightEdges)
 					{
-						if (fac >= 1.0 && fac <= straightEdgeRad )
+						if (fac >= 1.0 && fac <= straightEdgeRad)
 						{
-							vx2 = vx1+fac*vec1 * ((m_weight / m_segments) * double(seg+1));
+							vx2 = vx1 + fac*vec1 * ((m_weight / m_segments) * double(seg + 1));
 						}
 					}
 				}
@@ -1536,6 +1627,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 					vx2 = currP;
 				}
 
+
+
 				vertPoints.set(vx2, polygonVerts[j]);
 
 				//------------------------------------------------------------------------------
@@ -1543,7 +1636,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 			}
 
-			
+
 		}
 
 
@@ -1555,221 +1648,138 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	}
 
+	//mFn.updateSurface();
 
-	// Sort Crease set
+	//
+
+	//// -----------------------------------------------------------------------------------------
+	//// PROFILE
 
 
-	//MGlobal::displayInfo(MString() + "m_vertConnA ---" + m_vertConnA.size());
+	//mFn.getPoints(allVerts, MSpace::kObject);
 
+	//oldPolyPointsA.clear();
+	//oldPolyNormalA.clear();
+	//mItPoly.reset();
 
-	//for(int i=0; i < m_vertConnA.size(); i++)
+	//for (; !mItPoly.isDone(); mItPoly.next())
 	//{
-	//	 
-	//	 MGlobal::displayInfo(MString() + "-----");
-	//	 for(int z=0; z < m_vertConnA[i].length(); z++)
-	//	{
 
-	//		MGlobal::displayInfo(MString() + m_vertConnA[i][z]);
 
-	//	}
+	//	mItPoly.getPoints(oldvertPoints, MSpace::kObject, &status);
+	//	CHECK_MSTATUS_AND_RETURN_IT(status);
+	//	oldPolyPointsA.push_back(oldvertPoints);
 
+	//	MVector currN;
+
+	//	status = mItPoly.getNormal(currN, MSpace::kObject);
+	//	CHECK_MSTATUS_AND_RETURN_IT(status);
+	//	oldPolyNormalA.append(currN);
 	//}
 
+	////------------------------------------------------------------------------------
 
+	//int startP = numPoly * 2;
+	//int endP = mFn.numPolygons();
+	//int segCount = 0;
 
+	//float rampPosition, curveRampValue;
 
-
-	 //MGlobal::displayInfo(MString() + "-----");
-	 // MGlobal::displayInfo(MString() + "-----");
-
-	 //  MGlobal::displayInfo(MString() + "-----");
-
-	vector<MIntArray>	m_vertConnA_sorted;
-
-	for(int i=0; i < m_vertConnA.size(); i++)
-	{
-		// MGlobal::displayInfo(MString() + "-----");
-
-		MIntArray tempA;
-
-		for(int z=0; z < m_vertConnA.size(); z++)
-		{
-
-			// MGlobal::displayInfo(MString() + m_vertConnA[z][i]);
-
-				tempA.append(m_vertConnA[z][i]);
-
-		}
-
-		m_vertConnA_sorted.push_back(tempA);
-	}
-
-	mFn.getPoints(allVerts, MSpace::kObject);
-
-
-	//for (int i = 0; i < m_vertConnA_sorted.size(); i++)
+	//int co = 1;
+	//for (int i = startP; i < endP; i++)
 	//{
+	//	//MGlobal::displayInfo(MString() + i);
 
-	//	MGlobal::displayInfo(MString() + "-----");
+	//	status = mFn.getPolygonVertices(i, polygonVerts);
+	//	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	//	for(int z=0; z < m_vertConnA_sorted[i].length(); z++)
+	//	for (int j = 0; j < polygonVerts.length(); j++)
 	//	{
+	//		mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
+	//		mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
 
-	//		if (z < m_vertConnA_sorted[i].length()-1)
+	//		MPoint oldP = currP;
+
+
+
+	//		if (m_autoSegments)
 	//		{
-	//			if (m_vertConnA_sorted[i].length() > 1)
-	//			{
-	//				MGlobal::displayInfo(MString() + m_vertConnA_sorted[i][z] + " -> " +  m_vertConnA_sorted[i][z+1] );
-	//			}
-	//			
+	//			currP += -currN * (m_bulge * m_curve_values[segCount]);
 	//		}
 
+	//		if (!m_autoSegments)
+	//		{
+
+	//			rampPosition = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
+	//			curveRampValue = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
+	//			a_curveAttribute.getValueAtPosition(rampPosition, curveRampValue);
+	//			currP += -currN * double(curveRampValue) * m_bulge;
+
+	//		}
+
+
+
+	//		if (m_straightEdges) // Straighten it
+	//		{
+	//			MPoint vx1 = oldPolyPointsA[i][j];
+	//			MPoint vx2 = currP;
+
+	//			MVector vec1 = vx2 - vx1;
+	//			vec1.normalize();
+
+	//			MVector vec2 = -oldPolyNormalA[i];
+	//			double ang = vec1.angle(vec2);
+	//			double fac = 1.0 / cos(ang);
+
+	//			if (m_autoSegments)
+	//			{
+	//				if (fac >= 1.0 && fac <= straightEdgeRad)
+	//				{
+	//					currP = vx1 + fac*vec1 *  (m_bulge * m_curve_values[segCount]);
+	//				}
+	//			}
+
+	//			if (!m_autoSegments)
+	//			{
+	//				if (fac >= 1.0 && fac <= straightEdgeRad)
+	//				{
+	//					currP = vx1 + fac*vec1 *  double(curveRampValue) * m_bulge;
+	//				}
+	//			}
+	//		}
+
+	//		if (polygonVerts[j] >= allVerts.length() - numVerts)
+	//		{
+	//			currP = oldP;
+	//		}
+
+	//		allVerts.set(currP, polygonVerts[j]);
+
 	//	}
+
+	//	if (co == borderPolyCount)
+	//	{
+	//		//MGlobal::displayInfo(MString() + "-----------");
+	//		segCount += 1;
+	//		co = 0;
+	//	}
+
+	//	co += 1;
+
 	//}
 
-						//	mItVert.setIndex(polygonVerts[j],previndex);
-						//mItVert.getConnectedVertices(connVertices);
 
-						//bool break_loop = false;
-
-						//for (int i = 0; i < connVertices.length(); i++)
-						//{
-
-						//for (int z = 0; z < m_crease_vert_ids.length(); z++)
-						//{
-						//if (connVertices[i] == m_crease_vert_ids[z])
-						//{
+	//mFn.setPoints(allVerts, MSpace::kObject);
 
 
 
-	//MGlobal::displayInfo(MString() + numPolyExtr);
 
 
-	// -----------------------------------------------------------------------------------------
-	// PROFILE
-
-
-	mFn.getPoints(allVerts, MSpace::kObject);
-
-	oldPolyPointsA.clear();
-	oldPolyNormalA.clear();
-	mItPoly.reset();
-
-	for (; !mItPoly.isDone(); mItPoly.next())
-	{
-
-
-		mItPoly.getPoints(oldvertPoints, MSpace::kObject, &status);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-		oldPolyPointsA.push_back(oldvertPoints);
-
-		MVector currN;
-
-		status = mItPoly.getNormal(currN, MSpace::kObject);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-		oldPolyNormalA.append(currN);
-	}
-
-	//------------------------------------------------------------------------------
-
-	int startP = numPoly * 2;
-	int endP = mFn.numPolygons();
-	int segCount = 0;
-
-	float rampPosition,curveRampValue;
-
-	int co = 1;
-	for (int i = startP; i < endP; i++)
-	{
-		//MGlobal::displayInfo(MString() + i);
-
-		status = mFn.getPolygonVertices(i, polygonVerts);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-
-		for ( int j = 0; j < polygonVerts.length(); j++)
-		{
-			mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
-			mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
-
-			MPoint oldP = currP;
-
-
-
-			if (m_autoSegments)
-			{
-				currP += -currN * (m_bulge * m_curve_values[segCount]);
-			}
-
-			if (!m_autoSegments)
-			{
-
-				rampPosition = (1.0f / float(m_segments) ) * (float(segCount) * 2.0f);
-				curveRampValue = (1.0f / float(m_segments) ) * (float(segCount) * 2.0f);
-				a_curveAttribute.getValueAtPosition(rampPosition, curveRampValue);
-				currP += -currN * double(curveRampValue) * m_bulge;
-
-			}
-
-
-
-			if (m_straightEdges) // Straighten it
-			{
-				MPoint vx1 = oldPolyPointsA[i][j];
-				MPoint vx2 = currP;
-
-				MVector vec1 = vx2 - vx1;
-				vec1.normalize();
-
-				MVector vec2 = -oldPolyNormalA[i];
-				double ang = vec1.angle(vec2);
-				double fac = 1.0 / cos(ang);
-
-				if (m_autoSegments)
-				{
-					if (fac >= 1.0 && fac <= straightEdgeRad )
-					{
-						currP = vx1+fac*vec1 *  (m_bulge * m_curve_values[segCount]);
-					}
-				}
-
-				if (!m_autoSegments)
-				{
-					if (fac >= 1.0 && fac <= straightEdgeRad )
-					{
-						currP = vx1+fac*vec1 *  double(curveRampValue) * m_bulge;
-					}
-				}
-			}
-
-			if (polygonVerts[j] >= allVerts.length()-numVerts)
-			{
-				currP = oldP;
-			}
-
-			allVerts.set(currP, polygonVerts[j]);
-
-		}
-
-		if (co == borderPolyCount)
-		{
-			//MGlobal::displayInfo(MString() + "-----------");
-			segCount += 1;
-			co = 0;
-		}
-
-		co += 1;
-
-	}
-
-
-	mFn.setPoints(allVerts, MSpace::kObject);
 
 
 	// --------------------------------------------------------------------------
 	// Cap top polygon
 
-	//if (!m_isSmoothed)
-	//{
 
 
 
@@ -1787,16 +1797,17 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	if (!m_capBottom)
 	{
-		for (int i = numPoly; i < numPoly*2; i++)
+		for (int i = numPoly; i < numPoly * 2; i++)
 		{
 			extractFacesA.append(i);
 		}
+
 
 	}
 
 	if (!m_capTop || !m_capBottom)
 	{
-		MFloatVector translation(0.0,0.0,0.0);
+		MFloatVector translation(0.0, 0.0, 0.0);
 		status = mFn.extractFaces(extractFacesA, &translation);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -1806,7 +1817,58 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	}
 
+
+
+
+
+	//// query straight edges
+
+	//MItMeshEdge mItEdge(o_mergedMesh);
+
+
+	//double cosangleMin = cos((87 * M_PI) / 180);
+	//double cosangleMax = cos((93 * M_PI) / 180);
+
+
+
+	//for (; !mItEdge.isDone(); mItEdge.next())
+	//{
+	//	MIntArray connectedFaceIds;
+	//	mItEdge.getConnectedFaces(connectedFaceIds);
+
+	//	if (connectedFaceIds.length() != 2)
+	//	{
+	//		m_bevelEdgeArray.append(mItEdge.index());
+	//	}
+
+	//	else
+	//	{
+	//		MVector normal1;
+	//		MVector normal2;
+
+	//		mFn.getPolygonNormal(connectedFaceIds[0], normal1);
+	//		mFn.getPolygonNormal(connectedFaceIds[1], normal2);
+
+	//		double dotProduct = normal1 * normal2;
+
+	//		if (dotProduct >= cosangleMax && dotProduct <= cosangleMin)
+	//		{
+	//			m_bevelEdgeArray.append(mItEdge.index());
+	//		}
+
+	//	}
+
 	//}
+
+
+
+	//MGlobal::displayInfo(MString() + "----------------");
+	//for (int i = 0; i < m_bevelEdgeArray.length(); i++)
+	//{
+	//	MGlobal::displayInfo(MString() + m_bevelEdgeArray[i]);
+	//}
+
+
 
 
 	// ---------------------------------------------------------------------
@@ -1820,8 +1882,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	int nNumVertecies = mFn.numVertices();
 
-	MFloatVectorArray oNormals;
-	mFn.getVertexNormals(false, oNormals, MSpace::kObject);
 
 	n_uArrayA.clear();
 	n_vArrayA.clear();
@@ -1848,7 +1908,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			double uMax = n_uArrayA[0];
 
 #pragma omp parallel for
-			for ( int i = 0; i < n_uArrayA.length(); i++)
+			for (int i = 0; i < n_uArrayA.length(); i++)
 			{
 				if (n_uArrayA[i] > uMax)
 				{
@@ -1860,7 +1920,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				}
 			}
 
-			double uMinMaxDist = uMax-uMin;
+			double uMinMaxDist = uMax - uMin;
 
 			m_uvOffsetU = uMinMaxDist + m_uvOffsetUAutoPadding;
 
@@ -1870,10 +1930,10 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		int uvAL = ouArray.length();
 
 #pragma omp parallel for
-		for (int i = uvAL; i < uvAL*2; i++)
+		for (int i = uvAL; i < uvAL * 2; i++)
 		{
-			n_uArrayA[i] = n_uArrayA[i] + float( m_uvOffsetU );
-			n_vArrayA[i] = n_vArrayA[i] + float( m_uvOffsetV );
+			n_uArrayA[i] = n_uArrayA[i] + float(m_uvOffsetU);
+			n_vArrayA[i] = n_vArrayA[i] + float(m_uvOffsetV);
 		}
 	}
 
@@ -1887,11 +1947,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	//MGlobal::displayInfo(MString() + "nnumPolygons: " + nnumPolygons);
 	//MGlobal::displayInfo(MString() + "n_vArrayA: " + n_vArrayA.length());
 
-	for (int i = 0; i < nnumPolygons; i++) 
+	for (int i = 0; i < nnumPolygons; i++)
 	{
 		count = count + npolygonCounts[i];
 		for (int j = 0; j < npolygonCounts[i]; j++) {
-			if (j == 0){
+			if (j == 0) {
 				tempArray.append(npolygonConnects[count - npolygonCounts[i]]);
 
 				if (count - npolygonCounts[i] < nuvIds.length())
@@ -1955,15 +2015,15 @@ MStatus shellModNode::setObjectSmoothness()
 
 			//MGlobal::displayInfo(MString() + p_smoothMeshPlug.info() );
 
-			if (m_isSmoothed) 
+			if (m_isSmoothed)
 			{
 				p_smoothMeshPlug.setBool(true);
-				p_displaySubdComps.setInt(0);  
+				p_displaySubdComps.setInt(0);
 			}
 
-			else 
-			{ 
-				p_smoothMeshPlug.setBool(false); 
+			else
+			{
+				p_smoothMeshPlug.setBool(false);
 			}
 
 		}
@@ -1982,6 +2042,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	// check that the output mesh is connected
 	MPlug p_outMesh_check = MPlug(this->thisMObject(), aOutMesh);
+	MPlug p_outComponent = MPlug(this->thisMObject(), aOutputComponents);
 
 	if (!p_outMesh_check.isConnected())
 	{
@@ -2015,6 +2076,11 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	status = mergeInputMeshes();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	// --------------
+
+
+
+
 
 
 	// -----------------------------------------------------------------------------------------------------------------------
@@ -2031,10 +2097,6 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 	status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
-
-
 
 	extrudeMesh(newMeshData);
 
@@ -2074,16 +2136,16 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	MGlobal::displayInfo(MString() + "---");*/
 
 	// Set crease
-	ex_meshFn.setCreaseVertices(m_crease_vert_ids_extruded, m_crease_vert_data_extruded);
+	//ex_meshFn.setCreaseVertices(m_crease_vert_ids_extruded, m_crease_vert_data_extruded);
 	// ex_meshFn.setCreaseEdges(m_crease_edge_ids_extruded, m_crease_edge_data);
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally
-	for (int loop = 0; loop < ex_meshFn.numEdges(); loop++) 
+	for (int loop = 0; loop < ex_meshFn.numEdges(); loop++)
 	{
 
-		if (m_smoothNorm == true){ ex_meshFn.setEdgeSmoothing(loop, true); }
-		if (m_smoothNorm == false){ ex_meshFn.setEdgeSmoothing(loop, false); }
+		if (m_smoothNorm == true) { ex_meshFn.setEdgeSmoothing(loop, true); }
+		if (m_smoothNorm == false) { ex_meshFn.setEdgeSmoothing(loop, false); }
 	}
 
 	ex_meshFn.cleanupEdgeSmoothing();
@@ -2134,12 +2196,12 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
-		o_smoothOptions.setBoundaryRule( MMeshSmoothOptions::kLegacy );
+		o_smoothOptions.setBoundaryRule(MMeshSmoothOptions::kLegacy);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
-		o_smoothOptions.setKeepBorderEdge( false );
+		o_smoothOptions.setKeepBorderEdge(false);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
@@ -2158,6 +2220,24 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	}
 
 
+
+	// Create output component list
+	MDataHandle outComponentsHnd = data.outputValue(aOutputComponents);
+
+
+	MFnComponentListData fnComponentList;
+	MObject componentData = fnComponentList.create();
+
+	MFnSingleIndexedComponent fnSingleComponent;
+	MObject component = fnSingleComponent.create(MFn::kMeshEdgeComponent);
+	fnSingleComponent.addElements(m_bevelEdgeArray);
+	fnComponentList.add(component);
+
+	p_outComponent.setMObject(fnComponentList.object());
+
+
+
+
 	// setup connections
 	status = setupConneCtions(p_inMesh, p_outMesh);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -2169,6 +2249,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	}
 
 
+	//
 
 
 	return MS::kSuccess;
@@ -2191,7 +2272,7 @@ MStatus shellModNode::initialize()
 	shellModNode::aInMesh = tAttr.create("inMesh", "inMesh", MFnNumericData::kMesh);
 	tAttr.setStorable(false);
 	tAttr.setKeyable(false);
-	tAttr.setChannelBox( false );
+	tAttr.setChannelBox(false);
 	tAttr.setArray(true);
 	tAttr.setDisconnectBehavior(MFnAttribute::kDelete);
 	addAttribute(shellModNode::aInMesh);
@@ -2268,6 +2349,16 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aStraightenEdgesAngle);
 
+	shellModNode::aBevelEdgesAngle = nAttr.create("bevelEdgesAngle", "bevelEdgesAngle", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(1.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aBevelEdgesAngle);
+
+
 	shellModNode::aAutoSegments = nAttr.create("autoSegments", "autoSegments", MFnNumericData::kBoolean);
 	nAttr.setStorable(true);
 	nAttr.setDefault(true);
@@ -2293,7 +2384,7 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aBulge);
 
-	shellModNode::aProfilePresets = eAttr.create( "profilePresets", "profilePresets", 0);
+	shellModNode::aProfilePresets = eAttr.create("profilePresets", "profilePresets", 0);
 	eAttr.setStorable(true);
 	eAttr.addField("Custom", 0);
 	eAttr.addField("ChaserEdge 1%", 1);
@@ -2317,7 +2408,7 @@ MStatus shellModNode::initialize()
 	eAttr.addField("Bolt 2", 19);
 
 	eAttr.setDefault(3);
-	addAttribute( shellModNode::aProfilePresets );
+	addAttribute(shellModNode::aProfilePresets);
 
 	shellModNode::aCurveRamp = mAttr.createCurveRamp("profileRamp", "profileRamp");
 	addAttribute(aCurveRamp);
@@ -2366,7 +2457,7 @@ MStatus shellModNode::initialize()
 
 	// Add text attributes.
 	MFnStringData stringFn;
-	MObject defaultText = stringFn.create( "Unknown path" );
+	MObject defaultText = stringFn.create("Unknown path");
 	shellModNode::aPresetFolderPath = tAttr.create("presetFolderPath", "presetFolderPath", MFnData::kString, defaultText);
 	tAttr.setKeyable(false);
 	tAttr.setChannelBox(false);
@@ -2374,6 +2465,12 @@ MStatus shellModNode::initialize()
 	addAttribute(shellModNode::aPresetFolderPath);
 
 
+	// Output components
+	aOutputComponents = tAttr.create("outputComponents", "outputComponents", MFnData::kComponentList);
+	addAttribute(shellModNode::aOutputComponents);
+
+
+	attributeAffects(shellModNode::aInMesh, shellModNode::aOutputComponents);
 	attributeAffects(shellModNode::aInMesh, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aOffsetZ, shellModNode::aOutMesh);
 	//	attributeAffects(shellModNode::aChaserEdgeWeight, shellModNode::aOutMesh);
@@ -2400,6 +2497,8 @@ MStatus shellModNode::initialize()
 	//attributeAffects(shellModNode::aDisplaySmoothMesh, shellModNode::aOutMesh);
 
 	attributeAffects(shellModNode::aDisableBaseMeshOverride, shellModNode::aOutMesh);
+
+	attributeAffects(shellModNode::aBevelEdgesAngle, shellModNode::aOutMesh);
 
 	attributeAffects(shellModNode::aPresetFolderPath, shellModNode::aOutMesh);
 
