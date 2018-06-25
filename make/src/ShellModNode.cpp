@@ -1210,8 +1210,8 @@ void shellModNode::createChamfer(MObject& o_mergedMesh, MFnMesh &meshFn, MItMesh
 
 	vIt.setIndex(vertexIndex, prevIndex);
 	vIt.getConnectedEdges(edges);
-	
-	
+
+
 
 	float fRadius = 0.1;
 
@@ -1343,118 +1343,127 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	mFn.getUVs(ouArray, ovArray);
 	mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);
 
-	//
+	////
+	////
+	////
+	//// Chamfer corners
+	////
+	////
 
-	// Chamfer corners
-	MIntArray boundaryVerts;
-	MIntArray edges;
-	
-
-	MIntArray placements;
-	MFloatArray edgeFactors;
-	MFloatPointArray internalPoints;
-
-	bool found = false;
-
-	for (; !mItVert.isDone(); mItVert.next())
-	{
+	//MIntArray boundaryVerts;
+	//MIntArray edges;
 
 
-		int active_id = mItVert.index();
-		int prev_id = active_id;
+	//MIntArray placements;
+	//MFloatArray edgeFactors;
+	//MFloatPointArray internalPoints;
 
-		if (mItVert.onBoundary())
-		{
-
-
-
-			MIntArray conn_verts;
-
-			
-			mItVert.getConnectedVertices(conn_verts);
+	//bool found = false;
 
 
+	//mItVert.reset();
 
-			MPoint vertOrig = mItVert.position();
-			MPoint vertA;
-			MPoint vertB;
-
-			bool vertA_found = false;
-			bool vertB_found = false;
-
-			for (int i = 0; i < conn_verts.length(); i++)
-			{
-
-				MItMeshVertex  mItVert_new(o_mergedMesh);
-				mItVert_new.setIndex(conn_verts[i], active_id);
-
-				if (mItVert_new.onBoundary())
-				{
-					if (!vertA_found)
-					{
-						vertA = mItVert_new.position();
-						vertA_found = true;
-						prev_id = mItVert_new.index();
-						continue;
-					}
-
-					if (!vertB_found)
-					{
-						vertB = mItVert_new.position();
-						vertB_found = true;
-						prev_id = mItVert_new.index();
-						continue;
-					}
-
-				}
-
-			}
-
-			if (vertA_found && vertB_found)
-			{
-				MVector normal1 = vertOrig - vertA;
-				MVector normal2 = vertOrig - vertB;
-
-				double radians = normal1.angle(normal2);
-				double degrees = radians * (180.0 / M_PI);
-
-				
-
-				if (degrees >= 88 && degrees <= 92)
-				{
-					MGlobal::displayInfo(MString() + degrees + " / " + active_id);
-
-					//createChamfer(o_mergedMesh, mFn, mItVert, active_id, 1.0f);
-				
-				}
-
-			}
-
-			
+	//for (; !mItVert.isDone(); mItVert.next())
+	//{
 
 
-			//createChamfer(o_mergedMesh, mFn, mItVert,mItVert.index(), 1.0f);
-		}
+	//	if (mItVert.onBoundary())
+	//	{
 
-		mItVert.setIndex(active_id, prev_id);
+	//		MIntArray connEdges;
+	//		mItVert.getConnectedEdges(connEdges);
 
-	}
+	//		if (connEdges.length() == 2 && connEdges.length() == 4)
+	//		{
+	//			MPoint vertA;
+	//			MPoint vertB;
+
+	//			int edgeIDA;
+	//			int edgeIDB;
+
+	//			bool vertA_found = false;
+	//			bool vertB_found = false;
+
+	//			for (int i = 0; i < connEdges.length(); i++)
+	//			{
+
+	//				int previndex = 0;
+
+	//				MItMeshEdge itEdges_border(o_mergedMesh);
+	//				itEdges_border.setIndex(connEdges[i], previndex);
+
+	//				if(itEdges_border.onBoundary())
+	//				{
+
+	//					if (!vertA_found)
+	//					{
+	//						vertA = itEdges_border.point(0);
+	//						vertA_found = true;
+	//						edgeIDA = itEdges_border.index();
+	//						continue;
+	//					}
+
+	//					if (!vertB_found)
+	//					{
+	//						vertB = itEdges_border.point(0);
+	//						vertB_found = true;
+	//						edgeIDB = itEdges_border.index();
+	//						continue;
+	//					}
+
+	//					if (vertA_found && vertB_found)
+	//					{
+	//						break;
+	//					}
+
+	//				}
+
+	//			}
+
+	//			if (vertA_found && vertB_found)
+	//			{
+	//				MVector vecA = mItVert.position() - vertA;
+	//				MVector vecB = mItVert.position() - vertB;
+
+	//				double angle_rad = vecA.angle(vecB);
+	//				double angle_degree = angle_rad * (180.0 / M_PI);
+
+	//				if (angle_degree >= 88 && angle_degree <= 92)
+	//				{
+
+	//						placements.append(MFnMesh::kOnEdge);
+	//						placements.append(MFnMesh::kOnEdge);
+	//						edgeFactors.append(0.9f);
+	//						edgeFactors.append(0.1f);
+	//						placements.append(edgeIDA);
+	//						placements.append(edgeIDB);
+
+	//				}
+	//			}
+
+	//		}
 
 
-	//	placements.append(MFnMesh::kOnEdge);
-	//	placements.append(MFnMesh::kOnEdge);
-	//	edgeFactors.append(0.9f);
-	//	edgeFactors.append(0.1f);
+
+	//	}
+
+
+
+	//}
 
 
 
 
 	//status = mFn.split(placements, edges, edgeFactors, internalPoints);
 	//CHECK_MSTATUS(status);
-	mFn.updateSurface();
+
+
+
 
 	MPointArray boundaryPA;
 	MIntArray boundaryIdA;
+
+	mItVert.reset();
 
 	// Store Boundary verts, and original object normals
 	for (; !mItVert.isDone(); mItVert.next())
@@ -1599,7 +1608,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 						if (fac >= 1.0 && fac <= straightEdgeRad)
 						{
-							vx2 = vx1 + fac*vec1 *  (m_weight * m_curve_positions[seg]);
+							vx2 = vx1 + fac * vec1 *  (m_weight * m_curve_positions[seg]);
 
 						}
 
@@ -1617,7 +1626,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 					{
 						if (fac >= 1.0 && fac <= straightEdgeRad)
 						{
-							vx2 = vx1 + fac*vec1 * ((m_weight / m_segments) * double(seg + 1));
+							vx2 = vx1 + fac * vec1 * ((m_weight / m_segments) * double(seg + 1));
 						}
 					}
 				}
@@ -1648,128 +1657,130 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	}
 
+
+
 	//mFn.updateSurface();
 
-	//
+	
 
-	//// -----------------------------------------------------------------------------------------
-	//// PROFILE
-
-
-	//mFn.getPoints(allVerts, MSpace::kObject);
-
-	//oldPolyPointsA.clear();
-	//oldPolyNormalA.clear();
-	//mItPoly.reset();
-
-	//for (; !mItPoly.isDone(); mItPoly.next())
-	//{
+	// -----------------------------------------------------------------------------------------
+	// PROFILE
 
 
-	//	mItPoly.getPoints(oldvertPoints, MSpace::kObject, &status);
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
-	//	oldPolyPointsA.push_back(oldvertPoints);
+	mFn.getPoints(allVerts, MSpace::kObject);
 
-	//	MVector currN;
+	oldPolyPointsA.clear();
+	oldPolyNormalA.clear();
+	mItPoly.reset();
 
-	//	status = mItPoly.getNormal(currN, MSpace::kObject);
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
-	//	oldPolyNormalA.append(currN);
-	//}
-
-	////------------------------------------------------------------------------------
-
-	//int startP = numPoly * 2;
-	//int endP = mFn.numPolygons();
-	//int segCount = 0;
-
-	//float rampPosition, curveRampValue;
-
-	//int co = 1;
-	//for (int i = startP; i < endP; i++)
-	//{
-	//	//MGlobal::displayInfo(MString() + i);
-
-	//	status = mFn.getPolygonVertices(i, polygonVerts);
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	for (int j = 0; j < polygonVerts.length(); j++)
-	//	{
-	//		mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
-	//		mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
-
-	//		MPoint oldP = currP;
+	for (; !mItPoly.isDone(); mItPoly.next())
+	{
 
 
+		mItPoly.getPoints(oldvertPoints, MSpace::kObject, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		oldPolyPointsA.push_back(oldvertPoints);
 
-	//		if (m_autoSegments)
-	//		{
-	//			currP += -currN * (m_bulge * m_curve_values[segCount]);
-	//		}
+		MVector currN;
 
-	//		if (!m_autoSegments)
-	//		{
+		status = mItPoly.getNormal(currN, MSpace::kObject);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		oldPolyNormalA.append(currN);
+	}
 
-	//			rampPosition = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
-	//			curveRampValue = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
-	//			a_curveAttribute.getValueAtPosition(rampPosition, curveRampValue);
-	//			currP += -currN * double(curveRampValue) * m_bulge;
+	//------------------------------------------------------------------------------
 
-	//		}
+	int startP = numPoly * 2;
+	int endP = mFn.numPolygons();
+	int segCount = 0;
+
+	float rampPosition, curveRampValue;
+
+	int co = 1;
+	for (int i = startP; i < endP; i++)
+	{
+		//MGlobal::displayInfo(MString() + i);
+
+		status = mFn.getPolygonVertices(i, polygonVerts);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		for (int j = 0; j < polygonVerts.length(); j++)
+		{
+			mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
+			mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
+
+			MPoint oldP = currP;
 
 
 
-	//		if (m_straightEdges) // Straighten it
-	//		{
-	//			MPoint vx1 = oldPolyPointsA[i][j];
-	//			MPoint vx2 = currP;
+			if (m_autoSegments)
+			{
+				currP += -currN * (m_bulge * m_curve_values[segCount]);
+			}
 
-	//			MVector vec1 = vx2 - vx1;
-	//			vec1.normalize();
+			if (!m_autoSegments)
+			{
 
-	//			MVector vec2 = -oldPolyNormalA[i];
-	//			double ang = vec1.angle(vec2);
-	//			double fac = 1.0 / cos(ang);
+				rampPosition = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
+				curveRampValue = (1.0f / float(m_segments)) * (float(segCount) * 2.0f);
+				a_curveAttribute.getValueAtPosition(rampPosition, curveRampValue);
+				currP += -currN * double(curveRampValue) * m_bulge;
 
-	//			if (m_autoSegments)
-	//			{
-	//				if (fac >= 1.0 && fac <= straightEdgeRad)
-	//				{
-	//					currP = vx1 + fac*vec1 *  (m_bulge * m_curve_values[segCount]);
-	//				}
-	//			}
-
-	//			if (!m_autoSegments)
-	//			{
-	//				if (fac >= 1.0 && fac <= straightEdgeRad)
-	//				{
-	//					currP = vx1 + fac*vec1 *  double(curveRampValue) * m_bulge;
-	//				}
-	//			}
-	//		}
-
-	//		if (polygonVerts[j] >= allVerts.length() - numVerts)
-	//		{
-	//			currP = oldP;
-	//		}
-
-	//		allVerts.set(currP, polygonVerts[j]);
-
-	//	}
-
-	//	if (co == borderPolyCount)
-	//	{
-	//		//MGlobal::displayInfo(MString() + "-----------");
-	//		segCount += 1;
-	//		co = 0;
-	//	}
-
-	//	co += 1;
-
-	//}
+			}
 
 
-	//mFn.setPoints(allVerts, MSpace::kObject);
+
+			if (m_straightEdges) // Straighten it
+			{
+				MPoint vx1 = oldPolyPointsA[i][j];
+				MPoint vx2 = currP;
+
+				MVector vec1 = vx2 - vx1;
+				vec1.normalize();
+
+				MVector vec2 = -oldPolyNormalA[i];
+				double ang = vec1.angle(vec2);
+				double fac = 1.0 / cos(ang);
+
+				if (m_autoSegments)
+				{
+					if (fac >= 1.0 && fac <= straightEdgeRad)
+					{
+						currP = vx1 + fac*vec1 *  (m_bulge * m_curve_values[segCount]);
+					}
+				}
+
+				if (!m_autoSegments)
+				{
+					if (fac >= 1.0 && fac <= straightEdgeRad)
+					{
+						currP = vx1 + fac*vec1 *  double(curveRampValue) * m_bulge;
+					}
+				}
+			}
+
+			if (polygonVerts[j] >= allVerts.length() - numVerts)
+			{
+				currP = oldP;
+			}
+
+			allVerts.set(currP, polygonVerts[j]);
+
+		}
+
+		if (co == borderPolyCount)
+		{
+			//MGlobal::displayInfo(MString() + "-----------");
+			segCount += 1;
+			co = 0;
+		}
+
+		co += 1;
+
+	}
+
+
+	mFn.setPoints(allVerts, MSpace::kObject);
 
 
 

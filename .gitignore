@@ -115,3 +115,6 @@ $RECYCLE.BIN/
 *.opendb
 
 *.pbxproj
+*.db-wal
+*.db-shm
+*.ipch
