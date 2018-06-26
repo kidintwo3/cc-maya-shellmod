@@ -34,7 +34,7 @@ MStatus initializePlugin(MObject obj)
 
 
 
-	MFnPlugin fnPlugin(obj, "Creative Case", "2.05", "Any");
+	MFnPlugin fnPlugin(obj, "Creative Case", "2.1", "Any");
 
 	status = fnPlugin.registerCommand("shellModCommand", ShellModCommand::creator, ShellModCommand::newSyntax);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
