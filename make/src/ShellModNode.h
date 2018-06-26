@@ -117,6 +117,9 @@ public:
 	static MObject				aBevelEdgesAngle;
 	static MObject				aSmoothSubdiv;
 
+	static MObject				aChamferEdges;
+	static MObject				aChamferEdgeFactor;
+
 	static MObject				aBulge;
 	static MObject				aCurveRamp;
 
@@ -195,6 +198,8 @@ private:
 	bool						m_smoothNorm;
 	bool						m_reverseNormals;
 	bool						m_straightEdges;
+	bool						m_chamferEdges;
+	double						m_chamferEdgeFactor;
 	double						m_straightEdgesAngle;
 	bool						m_autoSegments;
 	short						m_profilePreset;

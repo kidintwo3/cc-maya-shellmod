@@ -25,6 +25,9 @@ MObject		shellModNode::aBulge;
 MObject		shellModNode::aCurveRamp;
 MObject		shellModNode::aBevelEdgesAngle;
 
+MObject		shellModNode::aChamferEdges;
+MObject		shellModNode::aChamferEdgeFactor;
+
 //MObject		shellModNode::aShadingOverride;
 
 MObject		shellModNode::aUVOffsetU;
@@ -507,14 +510,11 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 	m_weight = data.inputValue(aOffsetZ, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	//	m_chaserEdgeWeight = data.inputValue(aChaserEdgeWeight, &status).asDouble();
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	m_segments = data.inputValue(aSegments, &status).asInt();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	//	m_chaserEdges = data.inputValue(aChaserEdges, &status).asBool();
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
 	m_capTop = data.inputValue(aCapTop, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -533,6 +533,19 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 
 	m_straightEdgesAngle = data.inputValue(aStraightenEdgesAngle, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+
+
+	m_chamferEdges = data.inputValue(aChamferEdges, &status).asBool();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_chamferEdgeFactor = data.inputValue(aChamferEdgeFactor, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
 
 	m_autoSegments = data.inputValue(aAutoSegments, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1305,8 +1318,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	edgeLoopVertsA.clear();
 	edgeLoopVertsA.resize(2);
 
-	int numVerts = mFn.numVertices();
-	int numVertsBoundary = 0;
+
 
 	//
 
@@ -1324,10 +1336,198 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	MIntArray hardVerts, hardPolys, faceIDs;
 
-	// Store all the points of the original mesh
-	MPointArray oldVertPointsA;
-	mFn.getPoints(oldVertPointsA, MSpace::kObject);
+	//// Store all the points of the original mesh
+	//MPointArray oldVertPointsA;
+	//mFn.getPoints(oldVertPointsA, MSpace::kObject);
 
+
+
+
+	//
+	//
+	//
+	// Chamfer corners
+	//
+	//
+
+	if (m_chamferEdges)
+	{
+
+
+
+
+		MIntArray placements;
+		MIntArray edgeIDs;
+		MFloatArray edgeFactors;
+		MFloatPointArray internalPoints;
+
+		bool found = false;
+
+
+		mItVert.reset();
+
+		for (; !mItVert.isDone(); mItVert.next())
+		{
+
+
+			if (mItVert.onBoundary())
+			{
+
+				MIntArray connVerts;
+				mItVert.getConnectedVertices(connVerts);
+
+				if (connVerts.length() == 2 || connVerts.length() == 4)
+				{
+					MPoint vertA;
+					MPoint vertB;
+
+					int vertAId;
+					int vertBId;
+
+					bool vertA_found = false;
+					bool vertB_found = false;
+
+					for (int i = 0; i < connVerts.length(); i++)
+					{
+
+						int previndex = 0;
+
+						MItMeshVertex itVerts_border(o_mergedMesh);
+						itVerts_border.setIndex(connVerts[i], previndex);
+
+						if (itVerts_border.onBoundary())
+						{
+
+							if (!vertA_found)
+							{
+								vertA = itVerts_border.position();
+								vertA_found = true;
+								vertAId = itVerts_border.index();
+								continue;
+							}
+
+							if (!vertB_found)
+							{
+								vertB = itVerts_border.position();
+								vertB_found = true;
+								vertBId = itVerts_border.index();
+								continue;
+							}
+
+							if (vertA_found && vertB_found)
+							{
+								break;
+							}
+
+						}
+
+					}
+
+					if (vertA_found && vertB_found)
+					{
+
+						MIntArray connEdges;
+						mItVert.getConnectedEdges(connEdges);
+
+						if (connEdges.length() == 2 || connEdges.length() == 4)
+						{
+
+							int edgeAId;
+							int edgeBId;
+
+							bool edgeA_found = false;
+							bool edgeB_found = false;
+
+							for (int ce = 0; ce < connEdges.length(); ce++)
+							{
+
+								int previndex_edge = 0;
+
+								MItMeshEdge itEdge_border(o_mergedMesh);
+								itEdge_border.setIndex(connEdges[ce], previndex_edge);
+
+								if (itEdge_border.onBoundary())
+								{
+
+
+									if (!edgeA_found)
+									{
+
+										edgeA_found = true;
+										edgeAId = itEdge_border.index();
+										continue;
+									}
+
+									if (!edgeB_found)
+									{
+
+										edgeB_found = true;
+										edgeBId = itEdge_border.index();
+										continue;
+									}
+
+									if (edgeA_found && edgeB_found)
+									{
+										break;
+									}
+
+								}
+							}
+
+							if (edgeA_found && edgeB_found)
+							{
+
+								edgeFactors.clear();
+								edgeIDs.clear();
+								placements.clear();
+
+								edgeFactors.append(m_chamferEdgeFactor);
+								edgeIDs.append(edgeAId);
+								placements.append((int)MFnMesh::kOnEdge);
+
+								status = mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
+								CHECK_MSTATUS_AND_RETURN_IT(status);
+
+								edgeFactors.clear();
+								edgeIDs.clear();
+								placements.clear();
+
+								edgeFactors.append(1.0 - m_chamferEdgeFactor);
+								edgeIDs.append(edgeBId);
+								placements.append((int)MFnMesh::kOnEdge);
+
+								status = mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
+								CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+							}
+
+
+						}
+
+
+
+
+					}
+
+				}
+
+
+
+			}
+
+
+
+		}
+
+	}
+
+
+	// Num verts
+
+	int numVerts = mFn.numVertices();
+	int numVertsBoundary = 0;
 
 	// Store old UV's
 
@@ -1343,119 +1543,12 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	mFn.getUVs(ouArray, ovArray);
 	mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);
 
-	////
-	////
-	////
-	//// Chamfer corners
-	////
-	////
-
-	//MIntArray boundaryVerts;
-	//MIntArray edges;
 
 
-	//MIntArray placements;
-	//MFloatArray edgeFactors;
-	//MFloatPointArray internalPoints;
+	// Store all the points of the original mesh
+	MPointArray oldVertPointsA;
+	mFn.getPoints(oldVertPointsA, MSpace::kObject);
 
-	//bool found = false;
-
-
-	//mItVert.reset();
-
-	//for (; !mItVert.isDone(); mItVert.next())
-	//{
-
-
-	//	if (mItVert.onBoundary())
-	//	{
-
-	//		MIntArray connEdges;
-	//		mItVert.getConnectedEdges(connEdges);
-
-	//		if (connEdges.length() == 2 && connEdges.length() == 4)
-	//		{
-	//			MPoint vertA;
-	//			MPoint vertB;
-
-	//			int edgeIDA;
-	//			int edgeIDB;
-
-	//			bool vertA_found = false;
-	//			bool vertB_found = false;
-
-	//			for (int i = 0; i < connEdges.length(); i++)
-	//			{
-
-	//				int previndex = 0;
-
-	//				MItMeshEdge itEdges_border(o_mergedMesh);
-	//				itEdges_border.setIndex(connEdges[i], previndex);
-
-	//				if(itEdges_border.onBoundary())
-	//				{
-
-	//					if (!vertA_found)
-	//					{
-	//						vertA = itEdges_border.point(0);
-	//						vertA_found = true;
-	//						edgeIDA = itEdges_border.index();
-	//						continue;
-	//					}
-
-	//					if (!vertB_found)
-	//					{
-	//						vertB = itEdges_border.point(0);
-	//						vertB_found = true;
-	//						edgeIDB = itEdges_border.index();
-	//						continue;
-	//					}
-
-	//					if (vertA_found && vertB_found)
-	//					{
-	//						break;
-	//					}
-
-	//				}
-
-	//			}
-
-	//			if (vertA_found && vertB_found)
-	//			{
-	//				MVector vecA = mItVert.position() - vertA;
-	//				MVector vecB = mItVert.position() - vertB;
-
-	//				double angle_rad = vecA.angle(vecB);
-	//				double angle_degree = angle_rad * (180.0 / M_PI);
-
-	//				if (angle_degree >= 88 && angle_degree <= 92)
-	//				{
-
-	//						placements.append(MFnMesh::kOnEdge);
-	//						placements.append(MFnMesh::kOnEdge);
-	//						edgeFactors.append(0.9f);
-	//						edgeFactors.append(0.1f);
-	//						placements.append(edgeIDA);
-	//						placements.append(edgeIDB);
-
-	//				}
-	//			}
-
-	//		}
-
-
-
-	//	}
-
-
-
-	//}
-
-
-
-
-	//status = mFn.split(placements, edges, edgeFactors, internalPoints);
-	//CHECK_MSTATUS(status);
 
 
 
@@ -1661,7 +1754,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 	//mFn.updateSurface();
 
-	
+
 
 	// -----------------------------------------------------------------------------------------
 	// PROFILE
@@ -2323,6 +2416,7 @@ MStatus shellModNode::initialize()
 	////nAttr.setArray(true);
 	//addAttribute(shellModNode::aDisplaySmoothMesh);
 
+
 	shellModNode::aCapBottom = nAttr.create("capBottom", "capBottom", MFnNumericData::kBoolean);
 	nAttr.setStorable(true);
 	nAttr.setDefault(true);
@@ -2351,6 +2445,20 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aStraightenEdges);
 
+	shellModNode::aAutoSegments = nAttr.create("autoSegments", "autoSegments", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(true);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aAutoSegments);
+
+	shellModNode::aChamferEdges = nAttr.create("chamferEdges", "chamferEdges", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(false);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aChamferEdges);
+
 	shellModNode::aStraightenEdgesAngle = nAttr.create("straightenEdgesAngle", "straightenEdgesAngle", MFnNumericData::kDouble);
 	nAttr.setStorable(true);
 	nAttr.setDefault(1.0);
@@ -2370,12 +2478,16 @@ MStatus shellModNode::initialize()
 	addAttribute(shellModNode::aBevelEdgesAngle);
 
 
-	shellModNode::aAutoSegments = nAttr.create("autoSegments", "autoSegments", MFnNumericData::kBoolean);
+	shellModNode::aChamferEdgeFactor = nAttr.create("chamferEdgeFactor", "chamferEdgeFactor", MFnNumericData::kDouble);
 	nAttr.setStorable(true);
-	nAttr.setDefault(true);
+	nAttr.setDefault(0.1);
+	nAttr.setMin(0.0);
+	nAttr.setMax(1.0);
 	nAttr.setKeyable(true);
 	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aAutoSegments);
+	addAttribute(shellModNode::aChamferEdgeFactor);
+
+
 
 	shellModNode::aSmoothSubdiv = nAttr.create("smoothMeshSubdiv", "smoothMeshSubdiv", MFnNumericData::kInt);
 	nAttr.setStorable(true);
@@ -2484,6 +2596,10 @@ MStatus shellModNode::initialize()
 	attributeAffects(shellModNode::aInMesh, shellModNode::aOutputComponents);
 	attributeAffects(shellModNode::aInMesh, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aOffsetZ, shellModNode::aOutMesh);
+
+	attributeAffects(shellModNode::aChamferEdges, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aChamferEdgeFactor, shellModNode::aOutMesh);
+
 	//	attributeAffects(shellModNode::aChaserEdgeWeight, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aSegments, shellModNode::aOutMesh);
 	//	attributeAffects(shellModNode::aChaserEdges, shellModNode::aOutMesh);

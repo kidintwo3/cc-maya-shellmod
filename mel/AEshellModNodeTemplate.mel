@@ -1,7 +1,6 @@
 //deleteUI AttrEdshellModNodeFormLayout;
 global proc AEshellModNodeTemplate( string $nodeName )
 {
-	
 	editorTemplate -beginScrollLayout;
 	
 	editorTemplate -beginLayout "ShellMod 1shape settings" -collapse 0;
@@ -10,10 +9,10 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	editorTemplate -addControl "segments";
 	editorTemplate -addControl "straightenEdgesAngle";
 	editorTemplate -addControl "smoothMeshSubdiv";
-	
 	editorTemplate -addSeparator;
-	
-	editorTemplate -addControl "chaserEdges";
+	editorTemplate -addControl "chamferEdges";
+	editorTemplate -addControl "chamferEdgeFactor";
+	editorTemplate -addSeparator;
 	editorTemplate -addControl "capTop";
 	editorTemplate -addControl "capBottom";
 	editorTemplate -addControl "smoothNormals";
@@ -23,11 +22,9 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	
 	editorTemplate -addSeparator;
 	editorTemplate -addControl "baseMeshDisplayOverride";
-	
-	
+
 	AEaddRampControl( $nodeName + ".profileRamp" );
 	editorTemplate -addControl "profileStrength";
-	
 	
 	editorTemplate -addSeparator;
 	editorTemplate -label "Built in Presets" -addControl "profilePresets";
@@ -36,9 +33,7 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	editorTemplate -callCustom "AE_presetList_ShellMod_create" "AE_presetList_ShellMod_edit" "";
 	
 	editorTemplate -endLayout;
-	
-	
-	
+
 	editorTemplate -beginLayout "UV options" -collapse 0;
 	editorTemplate -addControl "uvOffsetU";
 	editorTemplate -addControl "uvOffsetV";
@@ -217,24 +212,15 @@ global proc AE_apply_customProfile_ShellMod(string $attrName)
 {
     string $nodeName[];
     tokenize($attrName, ".", $nodeName);
-    //AE_set_ProfileType(0, $nodeName[0]);
-   
-    
+	
     string $presetName[];
     $presetName = `textScrollList -query -si "sl_presets"`;
     
     if ($presetName[0] != "") 
     {
-        
-        
         string $sm_pr_path = eval("getAttr " + $nodeName[0] + ".presetFolderPath");
-          
-        print $sm_pr_path;
         shellModCommand -lp $presetName -pp $sm_pr_path -sm $nodeName[0];
-        
         textScrollList -edit -si $presetName "sl_presets";
-        
-        
     }
     
     setAttr ($nodeName[0] + ".profilePresets") 0;
@@ -247,7 +233,6 @@ global proc AE_add_customProfile_ShellMod(string $attrName)
 {
     string $nodeName[];
     tokenize($attrName, ".", $nodeName);
-    
     string $newPresetName;
     $newPresetName = `textField -query -tx "t_renamePreset"`;
     
@@ -255,9 +240,7 @@ global proc AE_add_customProfile_ShellMod(string $attrName)
     if ($newPresetName == "") { $newPresetName = "untitled";}
     
     string $sm_pr_path = eval("getAttr " + $nodeName[0] + ".presetFolderPath");
-    
     string $enumFields_list[] = `getFileList -fs "*.smp" -folder $sm_pr_path`;
-    
     string $enumName[];
     
     int $isSame = 0;
@@ -291,8 +274,6 @@ global proc AE_add_customProfile_ShellMod(string $attrName)
         shellModCommand -sp $newPresetName -pp $sm_pr_path -sm $nodeName[0];
     }
     
-    
-    
     AE_refresh_customProfile_ShellMod($nodeName[0]);
     
 }
@@ -307,8 +288,7 @@ global proc AE_remove_customProfile_ShellMod(string $attrName)
     
     if ($presetName[0] != "") 
     {
-        
-        
+
         string $conFirmVal = `confirmDialog -title "Delete" -message "Are you sure?" -button "Yes" -button "No" -defaultButton "Yes" -cancelButton "No" -dismissString "No"`;
     
             if($conFirmVal == "Yes")
@@ -322,9 +302,7 @@ global proc AE_remove_customProfile_ShellMod(string $attrName)
             {
                 
             }
-        
-        
-        
+
     }
     
     
@@ -336,14 +314,11 @@ global proc AE_del_ShellMod_create(string $attrName)
 {
 	string $nodeName[];
     tokenize($attrName, ".", $nodeName);
-
     iconTextButton -h 22 -style "iconAndTextHorizontal" -image1 "shellModNode_Trash.png" -label "Remove ShellMod from selected object"  -bgc 0.6 0.2 0.3 -c  ("AE_remove_ShellMod " + $nodeName[0] );
-    
 }
 
 global proc AE_del_ShellMod_edit(string $attrName)
 {
-
 }
 
 // ----------------------------
@@ -377,5 +352,4 @@ global proc AE_website_create(string $attrName)
 
 global proc AE_website_edit(string $attrName)
 {
-
 }
