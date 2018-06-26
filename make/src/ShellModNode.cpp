@@ -1429,7 +1429,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 						MIntArray connEdges;
 						mItVert.getConnectedEdges(connEdges);
 
-						if (connEdges.length() == 2 || connEdges.length() == 4)
+						if (connEdges.length() == 2 || connEdges.length() == 4 || connEdges.length() == 3)
 						{
 
 							int edgeAId;
@@ -1438,12 +1438,14 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 							bool edgeA_found = false;
 							bool edgeB_found = false;
 
+							MItMeshEdge itEdge_border(o_mergedMesh);
+
 							for (int ce = 0; ce < connEdges.length(); ce++)
 							{
 
 								int previndex_edge = 0;
 
-								MItMeshEdge itEdge_border(o_mergedMesh);
+								
 								itEdge_border.setIndex(connEdges[ce], previndex_edge);
 
 								if (itEdge_border.onBoundary())
@@ -1477,11 +1479,19 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 							if (edgeA_found && edgeB_found)
 							{
 
+				
 								edgeFactors.clear();
 								edgeIDs.clear();
 								placements.clear();
 
-								edgeFactors.append(m_chamferEdgeFactor);
+
+			
+
+								float edgeFactor0 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeAId, (m_chamferEdgeFactor) * 0.5, mItVert.index());
+								edgeFactors.append(edgeFactor0);
+
+								//edgeFactors.append(m_chamferEdgeFactor);
+
 								edgeIDs.append(edgeAId);
 								placements.append((int)MFnMesh::kOnEdge);
 
@@ -1492,7 +1502,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								edgeIDs.clear();
 								placements.clear();
 
-								edgeFactors.append(1.0 - m_chamferEdgeFactor);
+								float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeBId, (m_chamferEdgeFactor) * 0.5, mItVert.index());
+								edgeFactors.append(edgeFactor1);
+
+								//edgeFactors.append(1.0 - m_chamferEdgeFactor);
+
 								edgeIDs.append(edgeBId);
 								placements.append((int)MFnMesh::kOnEdge);
 
