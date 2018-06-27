@@ -544,9 +544,6 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 	m_chamferEdgeFactor = data.inputValue(aChamferEdgeFactor, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-
-
-
 	m_autoSegments = data.inputValue(aAutoSegments, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -1445,7 +1442,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 								int previndex_edge = 0;
 
-								
+
 								itEdge_border.setIndex(connEdges[ce], previndex_edge);
 
 								if (itEdge_border.onBoundary())
@@ -1479,13 +1476,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 							if (edgeA_found && edgeB_found)
 							{
 
-				
+
 								edgeFactors.clear();
 								edgeIDs.clear();
 								placements.clear();
 
-
-			
 
 								float edgeFactor0 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeAId, (m_chamferEdgeFactor) * 0.5, mItVert.index());
 								edgeFactors.append(edgeFactor0);
@@ -1495,8 +1490,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								edgeIDs.append(edgeAId);
 								placements.append((int)MFnMesh::kOnEdge);
 
-								status = mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
-								CHECK_MSTATUS_AND_RETURN_IT(status);
+								mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
 
 								edgeFactors.clear();
 								edgeIDs.clear();
@@ -1510,10 +1504,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								edgeIDs.append(edgeBId);
 								placements.append((int)MFnMesh::kOnEdge);
 
-								status = mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
-								CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
+								mFn.split(placements, edgeIDs, edgeFactors, internalPoints);
 
 							}
 
@@ -1552,16 +1543,21 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MIntArray ouvIds;
 
 
-	mFn.getCurrentUVSetName(o_defaultUVSetNameA);
+	status = mFn.getCurrentUVSetName(o_defaultUVSetNameA);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	mFn.getUVs(ouArray, ovArray);
-	mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);
+	status = mFn.getUVs(ouArray, ovArray);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
 	// Store all the points of the original mesh
 	MPointArray oldVertPointsA;
-	mFn.getPoints(oldVertPointsA, MSpace::kObject);
+	status = mFn.getPoints(oldVertPointsA, MSpace::kObject);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
@@ -1583,6 +1579,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		}
 
 		status = mItVert.getNormal(currN, MSpace::kObject);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
 		oldVertNormalA.append(currN);
 
 	}
@@ -1645,8 +1643,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		status = mFn.extrudeFaces(numv, 1, &trVec, true);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
-		mFn.getPoints(vertPoints, MSpace::kObject);
-		mFn.getVertices(vertexCountA, vertexIdListA);
+		status = mFn.getPoints(vertPoints, MSpace::kObject);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		status = mFn.getVertices(vertexCountA, vertexIdListA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		if (seg == 1)
 		{
@@ -1669,8 +1670,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				m_vertConnA_segment.append(polygonVerts[j]);
 
 
-				mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
-				mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
+				status = mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
+				CHECK_MSTATUS_AND_RETURN_IT(status);
+
+				status = mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
+				CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
@@ -1758,7 +1762,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 		m_vertConnA.push_back(m_vertConnA_segment);
 
-		mFn.setPoints(vertPoints, MSpace::kObject);
+		status = mFn.setPoints(vertPoints, MSpace::kObject);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
@@ -1774,7 +1779,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	// PROFILE
 
 
-	mFn.getPoints(allVerts, MSpace::kObject);
+	status = mFn.getPoints(allVerts, MSpace::kObject);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	oldPolyPointsA.clear();
 	oldPolyNormalA.clear();
@@ -1813,8 +1819,11 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 		for (int j = 0; j < polygonVerts.length(); j++)
 		{
-			mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
-			mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
+			status = mFn.getPoint(polygonVerts[j], currP, MSpace::kObject);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+
+			status = mFn.getVertexNormal(polygonVerts[j], false, currN, MSpace::kObject);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
 
 			MPoint oldP = currP;
 
@@ -1853,7 +1862,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				{
 					if (fac >= 1.0 && fac <= straightEdgeRad)
 					{
-						currP = vx1 + fac*vec1 *  (m_bulge * m_curve_values[segCount]);
+						currP = vx1 + fac * vec1 *  (m_bulge * m_curve_values[segCount]);
 					}
 				}
 
@@ -1861,7 +1870,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 				{
 					if (fac >= 1.0 && fac <= straightEdgeRad)
 					{
-						currP = vx1 + fac*vec1 *  double(curveRampValue) * m_bulge;
+						currP = vx1 + fac * vec1 *  double(curveRampValue) * m_bulge;
 					}
 				}
 			}
@@ -1887,7 +1896,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	}
 
 
-	mFn.setPoints(allVerts, MSpace::kObject);
+	status = mFn.setPoints(allVerts, MSpace::kObject);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 
@@ -1995,8 +2005,12 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MFloatPointArray nvertexArray;
 	MIntArray npolygonCounts;
 	MIntArray npolygonConnects;
-	mFn.getVertices(npolygonCounts, npolygonConnects);
-	mFn.getPoints(nvertexArray, MSpace::kObject);
+
+	status = mFn.getVertices(npolygonCounts, npolygonConnects);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	status = mFn.getPoints(nvertexArray, MSpace::kObject);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	int nNumVertecies = mFn.numVertices();
 
@@ -2065,32 +2079,35 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	//MGlobal::displayInfo(MString() + "nnumPolygons: " + nnumPolygons);
 	//MGlobal::displayInfo(MString() + "n_vArrayA: " + n_vArrayA.length());
 
-	for (int i = 0; i < nnumPolygons; i++)
+
+	if (nuvIds.length() > 0)
 	{
-		count = count + npolygonCounts[i];
-		for (int j = 0; j < npolygonCounts[i]; j++) {
-			if (j == 0) {
-				tempArray.append(npolygonConnects[count - npolygonCounts[i]]);
+		for (int i = 0; i < nnumPolygons; i++)
+		{
+			count = count + npolygonCounts[i];
+			for (int j = 0; j < npolygonCounts[i]; j++) {
+				if (j == 0) {
+					tempArray.append(npolygonConnects[count - npolygonCounts[i]]);
 
-				if (count - npolygonCounts[i] < nuvIds.length())
-				{
-					n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
-				}
+					if (count - npolygonCounts[i] < nuvIds.length())
+					{
+						n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
+					}
 
-			}
-			else {
-				tempArray.append(npolygonConnects[count - j]);
-				if (count - npolygonCounts[i] < nuvIds.length())
-				{
-					n_ouvIds.append(nuvIds[count - j]);
+				}
+				else {
+					tempArray.append(npolygonConnects[count - j]);
+					if (count - npolygonCounts[i] < nuvIds.length())
+					{
+						n_ouvIds.append(nuvIds[count - j]);
+					}
 				}
 			}
+
+
 		}
 
-
 	}
-
-
 
 
 
@@ -2210,11 +2227,25 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	// Create combined Meshes
 
+	if (o_uvIdsA.length() > 0)
+	{
 
-	meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, newMeshData, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, newMeshData, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
+
+	else
+	{
+
+		meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, newMeshData, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
+
+	//meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, newMeshData, &status);
+	//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	extrudeMesh(newMeshData);
 
@@ -2232,11 +2263,24 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	// MGlobal::displayInfo(MString() + o_uArrayA.length());
 
+	if (o_uvIdsA.length() > 0)
+	{
+		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, ex_newMeshData, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
 
-	ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, ex_newMeshData, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	else
+	{
+		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects,  ex_newMeshData, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
+
+	//ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, ex_newMeshData, &status);
+	//CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
 
 	/*
 	MGlobal::displayInfo(MString() + "---");
@@ -2367,10 +2411,12 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	}
 
 
+	cerr << "dasdasdas";
+
 	//
 
 
-	return MS::kSuccess;
+	return status;
 }
 
 MStatus shellModNode::initialize()
@@ -2401,23 +2447,6 @@ MStatus shellModNode::initialize()
 	tAttr.setReadable(true);
 	addAttribute(shellModNode::aOutMesh);
 
-	shellModNode::aOffsetZ = nAttr.create("offsetZ", "offsetZ", MFnNumericData::kDouble);
-	nAttr.setStorable(true);
-	nAttr.setDefault(1.0);
-	nAttr.setMin(0.0);
-	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aOffsetZ);
-
-	shellModNode::aSegments = nAttr.create("segments", "segments", MFnNumericData::kInt);
-	nAttr.setStorable(true);
-	nAttr.setDefault(1);
-	nAttr.setMin(1);
-	nAttr.setSoftMax(10);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aSegments);
 
 	shellModNode::aCapTop = nAttr.create("capTop", "capTop", MFnNumericData::kBoolean);
 	nAttr.setStorable(true);
@@ -2471,7 +2500,46 @@ MStatus shellModNode::initialize()
 	nAttr.setDefault(false);
 	nAttr.setKeyable(true);
 	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aChamferEdges);
+	status = addAttribute(shellModNode::aChamferEdges);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+	shellModNode::aUVOffsetUAuto = nAttr.create("uvOffsetUAutoOffset", "uvOffsetUAutoOffset", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(false);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVOffsetUAuto);
+
+	shellModNode::aUVOffsetUAutoPadding = nAttr.create("uvOffsetUAutoOffsetPadding", "uvOffsetUAutoOffsetPadding", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.01);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(0.5);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVOffsetUAutoPadding);
+
+
+	shellModNode::aDisableBaseMeshOverride = nAttr.create("baseMeshDisplayOverride", "baseMeshDisplayOverride", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(true);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aDisableBaseMeshOverride);
+
+
+
+	shellModNode::aOffsetZ = nAttr.create("offsetZ", "offsetZ", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(1.0);
+	nAttr.setMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aOffsetZ);
+
 
 	shellModNode::aStraightenEdgesAngle = nAttr.create("straightenEdgesAngle", "straightenEdgesAngle", MFnNumericData::kDouble);
 	nAttr.setStorable(true);
@@ -2499,8 +2567,35 @@ MStatus shellModNode::initialize()
 	nAttr.setMax(1.0);
 	nAttr.setKeyable(true);
 	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aChamferEdgeFactor);
+	status = addAttribute(shellModNode::aChamferEdgeFactor);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	shellModNode::aBulge = nAttr.create("profileStrength", "profileStrength", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.25);
+	nAttr.setSoftMin(-1.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aBulge);
+
+	shellModNode::aUVOffsetU = nAttr.create("uvOffsetU", "uvOffsetU", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(1.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVOffsetU);
+
+	shellModNode::aUVOffsetV = nAttr.create("uvOffsetV", "uvOffsetV", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVOffsetV);
 
 
 	shellModNode::aSmoothSubdiv = nAttr.create("smoothMeshSubdiv", "smoothMeshSubdiv", MFnNumericData::kInt);
@@ -2512,14 +2607,15 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aSmoothSubdiv);
 
-	shellModNode::aBulge = nAttr.create("profileStrength", "profileStrength", MFnNumericData::kDouble);
+	shellModNode::aSegments = nAttr.create("segments", "segments", MFnNumericData::kInt);
 	nAttr.setStorable(true);
-	nAttr.setDefault(0.25);
-	nAttr.setSoftMin(-1.0);
-	nAttr.setSoftMax(1.0);
+	nAttr.setDefault(1);
+	nAttr.setMin(1);
+	nAttr.setSoftMax(10);
 	nAttr.setKeyable(true);
 	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aBulge);
+	addAttribute(shellModNode::aSegments);
+
 
 	shellModNode::aProfilePresets = eAttr.create("profilePresets", "profilePresets", 0);
 	eAttr.setStorable(true);
@@ -2550,47 +2646,7 @@ MStatus shellModNode::initialize()
 	shellModNode::aCurveRamp = mAttr.createCurveRamp("profileRamp", "profileRamp");
 	addAttribute(aCurveRamp);
 
-	shellModNode::aUVOffsetU = nAttr.create("uvOffsetU", "uvOffsetU", MFnNumericData::kDouble);
-	nAttr.setStorable(true);
-	nAttr.setDefault(1.0);
-	nAttr.setSoftMin(0.0);
-	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aUVOffsetU);
 
-	shellModNode::aUVOffsetV = nAttr.create("uvOffsetV", "uvOffsetV", MFnNumericData::kDouble);
-	nAttr.setStorable(true);
-	nAttr.setDefault(0.0);
-	nAttr.setSoftMin(0.0);
-	nAttr.setSoftMax(1.0);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aUVOffsetV);
-
-	shellModNode::aUVOffsetUAuto = nAttr.create("uvOffsetUAutoOffset", "uvOffsetUAutoOffset", MFnNumericData::kBoolean);
-	nAttr.setStorable(true);
-	nAttr.setDefault(false);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aUVOffsetUAuto);
-
-	shellModNode::aUVOffsetUAutoPadding = nAttr.create("uvOffsetUAutoOffsetPadding", "uvOffsetUAutoOffsetPadding", MFnNumericData::kDouble);
-	nAttr.setStorable(true);
-	nAttr.setDefault(0.01);
-	nAttr.setMin(0.0);
-	nAttr.setSoftMax(0.5);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aUVOffsetUAutoPadding);
-
-
-	shellModNode::aDisableBaseMeshOverride = nAttr.create("baseMeshDisplayOverride", "baseMeshDisplayOverride", MFnNumericData::kBoolean);
-	nAttr.setStorable(true);
-	nAttr.setDefault(true);
-	nAttr.setKeyable(true);
-	nAttr.setChannelBox(true);
-	addAttribute(shellModNode::aDisableBaseMeshOverride);
 
 	// Add text attributes.
 	MFnStringData stringFn;

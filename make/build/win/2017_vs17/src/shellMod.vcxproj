@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -19,31 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{913E83D0-88D0-3B08-B314-18C1D8C8E5ED}</ProjectGuid>
+    <ProjectGuid>{D9DE5F22-40A4-3BB2-BAD5-AD93E9C0BB6B}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
     <ProjectName>shellMod</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -54,25 +56,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\bin\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\bin\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">shellMod.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">shellMod</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.mll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\bin\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\bin\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">shellMod.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">shellMod</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.mll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\bin\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\bin\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">shellMod.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">shellMod</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.mll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\bin\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\bin\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">shellMod.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">shellMod</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.mll</TargetExt>
@@ -82,10 +84,10 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -std=c++11</AdditionalOptions>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
@@ -110,15 +112,14 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/Program Files/Autodesk/Maya2017/lib;C:/Program Files/Autodesk/Maya2017/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64 /export:initializePlugin /export:uninitializePlugin</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/Debug/shellMod.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/bin/Debug/shellMod.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/Debug/shellMod.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/bin/Debug/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -127,9 +128,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -std=c++11</AdditionalOptions>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
@@ -139,7 +140,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR="Release";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR=\"Release\";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -154,15 +156,14 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/Program Files/Autodesk/Maya2017/lib;C:/Program Files/Autodesk/Maya2017/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64 /export:initializePlugin /export:uninitializePlugin</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/Release/shellMod.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/bin/Release/shellMod.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/Release/shellMod.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/bin/Release/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -171,9 +172,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -std=c++11</AdditionalOptions>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <Optimization>MinSpace</Optimization>
@@ -183,7 +184,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR="MinSizeRel";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR=\"MinSizeRel\";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -198,15 +200,14 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/Program Files/Autodesk/Maya2017/lib;C:/Program Files/Autodesk/Maya2017/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64 /export:initializePlugin /export:uninitializePlugin</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/MinSizeRel/shellMod.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/bin/MinSizeRel/shellMod.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/MinSizeRel/shellMod.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/bin/MinSizeRel/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -215,9 +216,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\Maya2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -std=c++11</AdditionalOptions>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -242,25 +243,24 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Autodesk\Maya2017\lib\OpenMaya.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaAnim.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaFX.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaRender.lib;C:\Program Files\Autodesk\Maya2017\lib\OpenMayaUI.lib;C:\Program Files\Autodesk\Maya2017\lib\Foundation.lib;C:\Program Files\Autodesk\Maya2017\lib\clew.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/Program Files/Autodesk/Maya2017/lib;C:/Program Files/Autodesk/Maya2017/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64 /export:initializePlugin /export:uninitializePlugin</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/RelWithDebInfo/shellMod.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/bin/RelWithDebInfo/shellMod.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/RelWithDebInfo/shellMod.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/bin/RelWithDebInfo/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
+    <CustomBuild Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/WORK/_admin/git/cc-maya-shellmod/make -BC:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017 --check-stamp-file C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make -BC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17 --check-stamp-file C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -268,12 +268,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageMessage.cmake;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/WORK/_admin/git/cc-maya-shellmod/make -BC:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017 --check-stamp-file C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make -BC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17 --check-stamp-file C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -281,12 +281,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageMessage.cmake;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/WORK/_admin/git/cc-maya-shellmod/make -BC:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017 --check-stamp-file C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make -BC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17 --check-stamp-file C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -294,12 +294,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageMessage.cmake;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/WORK/_admin/git/cc-maya-shellmod/make -BC:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017 --check-stamp-file C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2017/src/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make -BC:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17 --check-stamp-file C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/build/win/2017_vs17/src/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -307,26 +307,26 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/WORK/_admin/git/cc-maya-shellmod/make/src/CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;C:\WORK\_admin\git\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\WORK\_admin\git\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\src\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/janos.hunyadi/Documents/GitHub/cc-maya-shellmod/make/src/CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\modules\FindMaya.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.11\Modules\FindPackageMessage.cmake;C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\src\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\AETemplate.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\DagUtils.cpp"  />
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\DagUtils.h" />
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\icons.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModCommand.cpp"  />
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModCommand.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModNode.cpp"  />
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModNode.h" />
-    <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\Utils.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\pluginMain.cpp"  />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\AETemplate.h" />
+    <ClCompile Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\DagUtils.cpp" />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\DagUtils.h" />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\icons.h" />
+    <ClCompile Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\ShellModCommand.cpp" />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\ShellModCommand.h" />
+    <ClCompile Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\ShellModNode.cpp" />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\ShellModNode.h" />
+    <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\Utils.h" />
+    <ClCompile Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\pluginMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2017\ZERO_CHECK.vcxproj">
-      <Project>{D035D231-9D36-3799-932C-3E0A09BAEE27}</Project>
+    <ProjectReference Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\build\win\2017_vs17\ZERO_CHECK.vcxproj">
+      <Project>{EF371E47-B9DD-3D67-9470-36911BBC69E5}</Project>
       <Name>ZERO_CHECK</Name>
     </ProjectReference>
   </ItemGroup>
