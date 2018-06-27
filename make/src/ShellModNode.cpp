@@ -1038,9 +1038,16 @@ MStatus shellModNode::generateUVs() {
 
 		MFnMesh mFnA(m_inMeshArray[i]);
 
-		mFnA.getCurrentUVSetName(defaultUVSetName);
-		mFnA.getUVs(in_uArray, in_vArray);
-		mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
+
+		status = mFnA.getCurrentUVSetName(defaultUVSetName);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		status = mFnA.getUVs(in_uArray, in_vArray);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		status = mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
 
 		//v_defaultUVSetName[i] = defaultUVSetName;
 		o_defaultUVSetNameA = defaultUVSetName;
@@ -1262,35 +1269,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MStatus status;
 
 
-	// --------------------------------------------------------------------------------------------------------------------
-	// Setup mesh creation vector arrays for all meshes
-
-	// Offsets for Arrays - mesh
-	//	int idOffset = 0;
-	//	int polycOffset = 0;
-	//	int polyConnOffset = 0;
-
-	// Offsets for Arrays - mesh
-	//	int uArrayA_offset = 0;
-
-	// MFnMesh inMeshFn_first(m_inMeshArray[0]);
-
-	// Store the display options of the smooth mesh preview
-	// inMeshFn_first.getSmoothMeshDisplayOptions(o_smoothOptions);
-
-	//MGlobal::displayInfo(MString() + "boundaryRule: " + o_smoothOptions.boundaryRule() );
-	//MGlobal::displayInfo(MString() + "subdivisionType: " + o_smoothOptions.subdivisionType() );
-	//MGlobal::displayInfo(MString() + "openSubdivCreaseMethod: " + o_smoothOptions.openSubdivCreaseMethod() );
-	//MGlobal::displayInfo(MString() + "openSubdivVertexBoundary: " + o_smoothOptions.openSubdivVertexBoundary() );
-
-	// --------------------------------------------------------------------------------------------------------------------
-	// COMPUTE MESH
-
-	//MObject copy_obj;
-	//mFn.copy(o_mergedMesh, copy_obj);
-	//MFnMesh mFn_copy(copy_obj);
-
-
 	// set all mesh iterators
 	MFnMesh mFn(o_mergedMesh);
 
@@ -1334,10 +1312,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MIntArray hardVerts, hardPolys, faceIDs;
 
 	//// Store all the points of the original mesh
-	//MPointArray oldVertPointsA;
-	//mFn.getPoints(oldVertPointsA, MSpace::kObject);
-
-
 
 
 	//
@@ -1949,56 +1923,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 
-	//// query straight edges
-
-	//MItMeshEdge mItEdge(o_mergedMesh);
-
-
-	//double cosangleMin = cos((87 * M_PI) / 180);
-	//double cosangleMax = cos((93 * M_PI) / 180);
-
-
-
-	//for (; !mItEdge.isDone(); mItEdge.next())
-	//{
-	//	MIntArray connectedFaceIds;
-	//	mItEdge.getConnectedFaces(connectedFaceIds);
-
-	//	if (connectedFaceIds.length() != 2)
-	//	{
-	//		m_bevelEdgeArray.append(mItEdge.index());
-	//	}
-
-	//	else
-	//	{
-	//		MVector normal1;
-	//		MVector normal2;
-
-	//		mFn.getPolygonNormal(connectedFaceIds[0], normal1);
-	//		mFn.getPolygonNormal(connectedFaceIds[1], normal2);
-
-	//		double dotProduct = normal1 * normal2;
-
-	//		if (dotProduct >= cosangleMax && dotProduct <= cosangleMin)
-	//		{
-	//			m_bevelEdgeArray.append(mItEdge.index());
-	//		}
-
-	//	}
-
-	//}
-
-
-
-	//MGlobal::displayInfo(MString() + "----------------");
-	//for (int i = 0; i < m_bevelEdgeArray.length(); i++)
-	//{
-	//	MGlobal::displayInfo(MString() + m_bevelEdgeArray[i]);
-	//}
-
-
-
-
 	// ---------------------------------------------------------------------
 	//	int nnumVertices = mFn.numVertices();
 	int nnumPolygons = mFn.numPolygons();
@@ -2015,21 +1939,25 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	int nNumVertecies = mFn.numVertices();
 
 
+
 	n_uArrayA.clear();
 	n_vArrayA.clear();
-	MIntArray nuvCounts;
-	MIntArray nuvIds;
-
-	//mFn.getCurrentUVSetName(defaultUVSetName);
-
-	status = mFn.getUVs(n_uArrayA, n_vArrayA);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	status = mFn.getAssignedUVs(nuvCounts, nuvIds, &o_defaultUVSetNameA);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
-	if (n_uArrayA.length() > 0)
+	if (mFn.numUVs() > 0)
 	{
+
+
+		MIntArray nuvCounts;
+		MIntArray nuvIds;
+
+		status = mFn.getUVs(n_uArrayA, n_vArrayA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		status = mFn.getAssignedUVs(nuvCounts, nuvIds, &o_defaultUVSetNameA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
 		// ---------------------------------------------------------------------
 		// If auto U UV Offset is turned on
 		if (m_uvOffsetUAuto)
@@ -2067,48 +1995,71 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			n_uArrayA[i] = n_uArrayA[i] + float(m_uvOffsetU);
 			n_vArrayA[i] = n_vArrayA[i] + float(m_uvOffsetV);
 		}
-	}
 
 
-	MIntArray		tempArray;
-	MIntArray		n_ouvIds;
+		// flip uvs
+		
+		MIntArray		n_ouvIds;
 
-	int count = 0;
-	tempArray.clear();
+		int count = 0;
 
-	//MGlobal::displayInfo(MString() + "nnumPolygons: " + nnumPolygons);
-	//MGlobal::displayInfo(MString() + "n_vArrayA: " + n_vArrayA.length());
-
-
-	if (nuvIds.length() > 0)
-	{
-		for (int i = 0; i < nnumPolygons; i++)
+		if (nuvIds.length() > 0)
 		{
-			count = count + npolygonCounts[i];
-			for (int j = 0; j < npolygonCounts[i]; j++) {
-				if (j == 0) {
-					tempArray.append(npolygonConnects[count - npolygonCounts[i]]);
+			for (int i = 0; i < nnumPolygons; i++)
+			{
+				count = count + npolygonCounts[i];
+				for (int j = 0; j < npolygonCounts[i]; j++) {
+					if (j == 0) {
+	
+						if (count - npolygonCounts[i] < nuvIds.length())
+						{
+							n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
+						}
 
-					if (count - npolygonCounts[i] < nuvIds.length())
-					{
-						n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
 					}
+					else {
+						if (count - npolygonCounts[i] < nuvIds.length())
+						{
+							n_ouvIds.append(nuvIds[count - j]);
+						}
+					}
+				}
 
-				}
-				else {
-					tempArray.append(npolygonConnects[count - j]);
-					if (count - npolygonCounts[i] < nuvIds.length())
-					{
-						n_ouvIds.append(nuvIds[count - j]);
-					}
-				}
+
 			}
 
+
+			o_uvIdsA = n_ouvIds;
+			o_uvCountsA = nuvCounts;
+			o_uArrayA = n_uArrayA;
+			o_vArrayA = n_vArrayA;
 
 		}
 
 	}
 
+
+	// flip normals
+
+	MIntArray tempArray;
+	int count = 0;
+
+	for (int i = 0; i < nnumPolygons; i++)
+	{
+		count = count + npolygonCounts[i];
+		for (int j = 0; j < npolygonCounts[i]; j++) {
+			if (j == 0) {
+				tempArray.append(npolygonConnects[count - npolygonCounts[i]]);
+
+			}
+			else {
+				tempArray.append(npolygonConnects[count - j]);
+	
+			}
+		}
+
+
+	}
 
 
 	// Replace old array with reversed array (Flip uv's and normals)
@@ -2118,10 +2069,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	o_numPolygons = nnumPolygons;
 	o_polygonCounts = npolygonCounts;
 	o_polygonConnects = tempArray;
-	o_uvIdsA = n_ouvIds;
-	o_uvCountsA = nuvCounts;
-	o_uArrayA = n_uArrayA;
-	o_vArrayA = n_vArrayA;
+
 
 	return MS::kSuccess;
 }
@@ -2227,7 +2175,8 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	// Create combined Meshes
 
-	if (o_uvIdsA.length() > 0)
+
+	if (o_uArrayA.length() > 0)
 	{
 
 
@@ -2244,8 +2193,6 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
 
-	//meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, newMeshData, &status);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	extrudeMesh(newMeshData);
 
@@ -2261,9 +2208,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	MFnMeshData ex_meshDataFn;
 	MObject ex_newMeshData = ex_meshDataFn.create();
 
-	// MGlobal::displayInfo(MString() + o_uArrayA.length());
-
-	if (o_uvIdsA.length() > 0)
+	if (o_uArrayA.length() > 0)
 	{
 		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, ex_newMeshData, &status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -2273,33 +2218,11 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 
 	else
 	{
-		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects,  ex_newMeshData, &status);
+		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, ex_newMeshData, &status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
 
-	//ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, ex_newMeshData, &status);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
-
-	/*
-	MGlobal::displayInfo(MString() + "---");
-	for (int i = 0; i < m_crease_vert_ids.length(); i++)
-	{
-
-	MGlobal::displayInfo(MString() + m_crease_vert_ids[i]);
-	}
-	MGlobal::displayInfo(MString() + "---");
-	for (int i = 0; i < m_crease_edge_ids.length(); i++)
-	{
-
-	MGlobal::displayInfo(MString() + m_crease_edge_ids[i]);
-	}
-	MGlobal::displayInfo(MString() + "---");*/
-
-	// Set crease
-	//ex_meshFn.setCreaseVertices(m_crease_vert_ids_extruded, m_crease_vert_data_extruded);
-	// ex_meshFn.setCreaseEdges(m_crease_edge_ids_extruded, m_crease_edge_data);
+	//MGlobal::displayInfo(MString() + o_polygonConnects.length());
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally
@@ -2314,39 +2237,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	status = ex_meshFn.updateSurface();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	////
 
-	//if (m_isSmoothed == 2)
-	//{
-
-	//	if (m_mayaVer == "2016")
-	//	{
-	//		status = p_smoothLevelPlug.setInt(m_smoothMeshSubdiv);
-	//		CHECK_MSTATUS_AND_RETURN_IT(status);
-	//	}
-
-	//	o_smoothOptions.setDivisions(m_smoothMeshSubdiv, &status);
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	//o_smoothOptions.setSubdivisionType( MMeshSmoothOptions::kCatmullClark );
-	//	//CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	//o_smoothOptions.setOpenSubdivVertexBoundary( MMeshSmoothOptions::kNone );
-	//	//CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	//o_smoothOptions.setOpenSubdivCreaseMethod( MMeshSmoothOptions::kNormal );
-	//	//CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	//o_smoothOptions.setBoundaryRule( MMeshSmoothOptions::kLegacy );
-	//	//CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	ex_meshFn.generateSmoothMesh(ex_newMeshData, &o_smoothOptions, &status);
-	//	CHECK_MSTATUS_AND_RETURN_IT(status);
-
-	//	h_outputMesh.set(ex_newMeshData);
-
-
-	//}
 
 	// -----------------------------------------------------------------------------------------------------------------------
 	// Set output mesh to datablock
