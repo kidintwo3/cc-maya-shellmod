@@ -30,7 +30,7 @@ MStatus initializePlugin(MObject obj)
 		icons_data_write();
 		MGlobal::executeCommand(mel_createShelf());
 		MGlobal::executeCommand(mel_AETemplate());
-	}
+	} 
 
 
 

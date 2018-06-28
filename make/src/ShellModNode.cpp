@@ -35,6 +35,14 @@ MObject		shellModNode::aUVOffsetV;
 MObject		shellModNode::aUVOffsetUAuto;
 MObject		shellModNode::aUVOffsetUAutoPadding;
 
+MObject		shellModNode::aUVTranslateU;
+MObject		shellModNode::aUVTranslateV;
+MObject		shellModNode::aUVRotate;
+MObject		shellModNode::aUVScaleU;
+MObject		shellModNode::aUVScaleV;
+
+
+
 MObject		shellModNode::aOutputComponents;
 
 MObject		shellModNode::aDisableBaseMeshOverride;
@@ -254,74 +262,34 @@ MStatus shellModNode::setupConneCtions(MPlug &inMeshPlug, MPlug &outMeshPlug)
 
 	// -----------------------------------------------
 	// Collect output plug mesh's name
-	status = outMeshPlug.selectAncestorLogicalIndex(0);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+	//status = outMeshPlug.selectAncestorLogicalIndex(outMeshPlug.numElements());
+	//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	MPlugArray outputs_plugArr;
 	outMeshPlug.connectedTo(outputs_plugArr, false, true, &status);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	outMeshPlug = outputs_plugArr[0];
-	MFnDependencyNode outMesh_dn(outMeshPlug.node());
+	if (outputs_plugArr.length() > 0)
+	{
+
+		outMeshPlug = outputs_plugArr[0];
+		MFnDependencyNode outMesh_dn(outMeshPlug.node());
 
 
-	//	// -----------------------------------------------
-	//	// Collect input plug mesh's name
-	//	// Iterate trhrough input meshes and set override
-	//	for (unsigned int i = 0; i < p_inMesh.numElements(); i++)
-	//	{
-	//		if (p_inMesh[i].isConnected())
-	//		{
-	//			MPlug inMeshPlug = p_inMesh[i];
-	//
-	//			inMeshPlug.selectAncestorLogicalIndex(0);
-	//			MPlugArray inputs_plugArr;
-	//			inMeshPlug.connectedTo(inputs_plugArr, true, false);
-	//			inMeshPlug = inputs_plugArr[0];
-	//
-	//			MFnDependencyNode inMesh_dn(inMeshPlug.node());
-	//
-	//			MPlug p_in_overrideEnabled = inMesh_dn.findPlug("overrideEnabled", false, &status);
-	//			CHECK_MSTATUS_AND_RETURN_IT(status);
-	//			p_in_overrideShading = inMesh_dn.findPlug("overrideShading", false, &status);
-	//			CHECK_MSTATUS_AND_RETURN_IT(status);
-	//
-	//			if (m_disableBaseMeshOverride)
-	//			{
-	//				p_in_overrideEnabled.setBool(true);
-	//				p_in_overrideShading.setInt(0);
-	//                
-	//			}
-	//
-	//			if (!m_disableBaseMeshOverride)
-	//			{
-	//				p_in_overrideEnabled.setBool(false);
-	//                p_in_overrideShading.setInt(1);
-	//                
-	//			}
-	//
-	//
-	//		}
-	//	}
+		// ------------------------------
 
-	// ------------------------------
+		MPlug p_out_overrideEnabled = outMesh_dn.findPlug("overrideEnabled", false, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		p_out_overrideEnabled.setBool(true);
 
-	MPlug p_out_overrideEnabled = outMesh_dn.findPlug("overrideEnabled", false, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	p_out_overrideEnabled.setBool(true);
+		MPlug p_out_overrideDisplayType = outMesh_dn.findPlug("overrideDisplayType", false, &status);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+		p_out_overrideDisplayType.setInt(2);
 
-	MPlug p_out_overrideDisplayType = outMesh_dn.findPlug("overrideDisplayType", false, &status);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
-	p_out_overrideDisplayType.setInt(2);
-
-	//MPlug p_out_overrideDispSubd = outMesh_dn.findPlug("displaySmoothMesh", false, &status);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
-	//p_out_overrideDispSubd.setShort(m_isSmoothed);
-
-	//MPlug p_out_overrideSmoothLev = outMesh_dn.findPlug("smoothLevel", false, &status);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
-	//p_out_overrideSmoothLev.setInt(m_smoothMeshSubdiv);
-
+	}
 
 
 
@@ -573,6 +541,22 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	m_uvOffsetV = data.inputValue(aUVOffsetV, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+	m_uvTranslateU = data.inputValue(aUVTranslateU, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_uvTranslateV = data.inputValue(aUVTranslateV, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_uvRotate = data.inputValue(aUVRotate, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_uvScaleU = data.inputValue(aUVScaleU, &status).asDouble();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_uvScaleV = data.inputValue(aUVScaleV, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	m_uvOffsetUAuto = data.inputValue(aUVOffsetUAuto, &status).asBool();
@@ -1294,6 +1278,26 @@ void shellModNode::createChamfer(MObject& o_mergedMesh, MFnMesh &meshFn, MItMesh
 	meshFn.split(placements, edgeIDs, edgeFactors, internalPoints);
 }
 
+MPoint shellModNode::rotate_point(float cx, float cy, float angle, MPoint p)
+{
+	float s = sin(angle);
+	float c = cos(angle);
+
+	// translate point back to origin:
+	p.x -= cx;
+	p.y -= cy;
+
+	// rotate point
+	float xnew = p.x * c + p.y * s;
+	float ynew = -p.x * s + p.y * c;
+
+	// translate point back:
+	p.x = xnew;
+	p.y = ynew;
+
+	return p;
+}
+
 
 MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 {
@@ -1944,6 +1948,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		status = mFn.extractFaces(extractFacesA, &translation);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
+
+
 		status = mFn.collapseFaces(extractFacesA);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -1988,6 +1994,45 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
+
+		// Pre transform UVs
+
+		if (n_uArrayA.length() > 0)
+		{
+
+			double centerU, centerV;
+
+			for (int i = 0; i < n_uArrayA.length(); i++)
+			{
+				centerU += n_uArrayA[i];
+				centerV += n_vArrayA[i];
+			}
+
+			centerU /= n_uArrayA.length();
+			centerV /= n_vArrayA.length();
+
+
+			MPoint rotUVP;
+			double rotAxis = (m_uvRotate + 180.000)  * (M_PI / 180.0);
+
+			for (int i = 0; i < n_uArrayA.length(); i++)
+			{
+
+				n_uArrayA[i] *= m_uvScaleU;
+				n_vArrayA[i] *= m_uvScaleV;
+
+				rotUVP = shellModNode::rotate_point(n_uArrayA[i], n_vArrayA[i], rotAxis, MPoint(centerU, centerV, 0.0));
+
+				n_uArrayA[i] = rotUVP.x + centerU;
+				n_vArrayA[i] = rotUVP.y + centerV;
+
+				n_uArrayA[i] += m_uvTranslateU;
+				n_vArrayA[i] += m_uvTranslateV;
+
+
+			}
+
+		}
 
 		// ---------------------------------------------------------------------
 		// If auto U UV Offset is turned on
@@ -2517,6 +2562,52 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aUVOffsetV);
 
+	// UV Transforms
+	shellModNode::aUVTranslateU = nAttr.create("uvTranslateU", "uvTranslateU", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVTranslateU);
+
+	shellModNode::aUVTranslateV = nAttr.create("uvTranslateV", "uvTranslateV", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVTranslateV);
+
+	shellModNode::aUVRotate = nAttr.create("uvRotate", "uvRotate", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(0.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(360.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVRotate);
+
+
+	shellModNode::aUVScaleU = nAttr.create("uvScaleU", "uvScaleU", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(1.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVScaleU);
+
+	shellModNode::aUVScaleV = nAttr.create("uvScaleV", "uvScaleV", MFnNumericData::kDouble);
+	nAttr.setStorable(true);
+	nAttr.setDefault(1.0);
+	nAttr.setSoftMin(0.0);
+	nAttr.setSoftMax(1.0);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aUVScaleV);
 
 	shellModNode::aSmoothSubdiv = nAttr.create("smoothMeshSubdiv", "smoothMeshSubdiv", MFnNumericData::kInt);
 	nAttr.setStorable(true);
@@ -2608,6 +2699,13 @@ MStatus shellModNode::initialize()
 
 	attributeAffects(shellModNode::aUVOffsetU, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVOffsetV, shellModNode::aOutMesh);
+
+	attributeAffects(shellModNode::aUVTranslateU, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aUVTranslateV, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aUVRotate, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aUVScaleU, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aUVScaleV, shellModNode::aOutMesh);
+
 	attributeAffects(shellModNode::aUVOffsetUAuto, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVOffsetUAutoPadding, shellModNode::aOutMesh);
 

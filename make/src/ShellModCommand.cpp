@@ -725,6 +725,13 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		// Assign same material as input 0 object
 		assignSameMaterial(p_currSelShapeA[0], o_newMesh);
 
+		MStringArray outputStringA;
+
+		outputStringA.append(fnDepShellMod.name());
+		outputStringA.append(fnDepshellModOutputMesh.name());
+
+		MPxCommand::setResult(outputStringA);
+
 	}
 
 

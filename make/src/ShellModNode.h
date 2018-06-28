@@ -128,10 +128,20 @@ public:
 	static MObject				aUVOffsetU;
 	static MObject				aUVOffsetV;
 
+
+	static MObject				aUVTranslateU;
+	static MObject				aUVTranslateV;
+
+	static MObject				aUVRotate;
+
+	static MObject				aUVScaleU;
+	static MObject				aUVScaleV;
+
+
 	static MObject				aUVOffsetUAuto;
 	static MObject				aUVOffsetUAutoPadding;
-    
-    static MObject				aPresetFolderPath;
+
+	static MObject				aPresetFolderPath;
 
 	static MObject				aOutputComponents;
 
@@ -141,12 +151,12 @@ public:
 
 	static MTypeId				id;
 
-	static void					aboutToDeleteCB( MObject& node, MDGModifier& modifier, void* clientData );
-	
-    
-    static MString              pluginLoadPath;
+	static void					aboutToDeleteCB(MObject& node, MDGModifier& modifier, void* clientData);
 
-	
+
+	static MString              pluginLoadPath;
+
+
 
 private:
 
@@ -159,6 +169,8 @@ private:
 
 	MStatus						setupConneCtions(MPlug &inMeshPlug, MPlug &outMeshPlug);
 	MStatus						doLcCheck();
+
+	MPoint						rotate_point(float cx, float cy, float angle, MPoint p);
 
 	void						profilePresets(const int &m_profilePreset);
 
@@ -173,8 +185,8 @@ private:
 	MStatus						extrudeMesh(MObject& o_mergedMesh);
 
 	MStatus						setObjectSmoothness();
-    
-    MStatus                     checkPresetFolder();
+
+	MStatus                     checkPresetFolder();
 
 	MPlug						p_in_overrideEnabled;
 	MPlug						p_in_overrideShading;
@@ -184,10 +196,10 @@ private:
 
 	// Datablock
 	MDataHandle					h_outputMesh;
-    MDataHandle					h_outPresetPath;
-    
-    MString                     m_presetPath;
-    
+	MDataHandle					h_outPresetPath;
+
+	MString                     m_presetPath;
+
 	int							m_displaySmoothMesh;
 
 	bool						m_overrideShading;
@@ -214,6 +226,13 @@ private:
 	// UV attributes
 	double						m_uvOffsetU;
 	double						m_uvOffsetV;
+
+	double						m_uvTranslateU;
+	double						m_uvTranslateV;
+	double						m_uvRotate;
+	double						m_uvScaleU;
+	double						m_uvScaleV;
+
 	bool						m_uvOffsetUAuto;
 	double						m_uvOffsetUAutoPadding;
 
@@ -287,8 +306,8 @@ private:
 	MObject				o_outMesh;
 
 
-    MString             s_readPluginPath;
-    MFileObject         o_presetPath;
+	MString             s_readPluginPath;
+	MFileObject         o_presetPath;
 
 	MString				m_mayaVer;
 
