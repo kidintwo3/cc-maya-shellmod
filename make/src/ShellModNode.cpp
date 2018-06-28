@@ -255,10 +255,12 @@ MStatus shellModNode::setupConneCtions(MPlug &inMeshPlug, MPlug &outMeshPlug)
 	// -----------------------------------------------
 	// Collect output plug mesh's name
 	status = outMeshPlug.selectAncestorLogicalIndex(0);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	MPlugArray outputs_plugArr;
 	outMeshPlug.connectedTo(outputs_plugArr, false, true, &status);
-	//CHECK_MSTATUS_AND_RETURN_IT(status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	outMeshPlug = outputs_plugArr[0];
 	MFnDependencyNode outMesh_dn(outMeshPlug.node());
 
@@ -817,6 +819,8 @@ MStatus shellModNode::mergeInputMeshes()
 	i_polygonCounts.resize(m_numInputMeshes);
 	i_polygonConnects.resize(m_numInputMeshes);
 
+	bool has_uvs = false;
+
 	for (int m = 0; m < m_numInputMeshes; m++)
 	{
 
@@ -830,7 +834,10 @@ MStatus shellModNode::mergeInputMeshes()
 		mfnMesh.getPoints(i_vertexArray[m], MSpace::kWorld);
 		mfnMesh.getVertices(i_polygonCounts[m], i_polygonConnects[m]);
 
-
+		if (mfnMesh.numUVs() > 0)
+		{
+			has_uvs = true;
+		}
 	}
 
 	// Allocate memory for vector
@@ -879,7 +886,6 @@ MStatus shellModNode::mergeInputMeshes()
 	int idOffset = 0;
 	int polycOffset = 0;
 	int polyConnOffset = 0;
-	//int edgeSmoothOffset = 0;
 
 	for (int m = 0; m < m_numInputMeshes; m++)
 	{
@@ -958,21 +964,6 @@ MStatus shellModNode::mergeInputMeshes()
 			co -= 1;
 		}
 
-		MIntArray revUVCA;
-		co = o_uvCountsA.length() - 1;
-		for (unsigned i = 0; i < o_uvCountsA.length(); i++)
-		{
-			revUVCA.append(o_uvCountsA[co]);
-			co -= 1;
-		}
-
-		MIntArray revUVIDA;
-		co = o_uvIdsA.length() - 1;
-		for (unsigned i = 0; i < o_uvIdsA.length(); i++)
-		{
-			revUVIDA.append(o_uvIdsA[co]);
-			co -= 1;
-		}
 
 
 
@@ -980,17 +971,45 @@ MStatus shellModNode::mergeInputMeshes()
 		o_polygonConnects = revPCA;
 		o_polygonCounts = revFCA;
 
-		o_uvCountsA = revUVCA;
-		o_uvIdsA = revUVIDA;
 
 	}
 
 
 
+	if (has_uvs)
+	{
+
+		if (m_reverseNormals)
+		{
 
 
 
 
+			MIntArray revUVCA;
+			int co = o_uvCountsA.length() - 1;
+			for (unsigned i = 0; i < o_uvCountsA.length(); i++)
+			{
+				revUVCA.append(o_uvCountsA[co]);
+				co -= 1;
+			}
+
+			MIntArray revUVIDA;
+			co = o_uvIdsA.length() - 1;
+			for (unsigned i = 0; i < o_uvIdsA.length(); i++)
+			{
+				revUVIDA.append(o_uvIdsA[co]);
+				co -= 1;
+			}
+
+
+			o_uvCountsA = revUVCA;
+			o_uvIdsA = revUVIDA;
+
+		}
+
+
+
+	}
 
 
 
@@ -1033,6 +1052,8 @@ MStatus shellModNode::generateUVs() {
 	v_in_uvCounts.resize(vecSize);
 	v_in_uvIds.resize(vecSize);
 
+	bool has_uvs = false;
+
 	for (int i = 0; i < m_inMeshArray.length(); i++)
 	{
 
@@ -1056,91 +1077,101 @@ MStatus shellModNode::generateUVs() {
 		v_in_uvCounts[i] = in_uvCounts;
 		v_in_uvIds[i] = in_uvIds;
 
+		if (mFnA.numUVs() > 0)
+		{
+			has_uvs = true;
+		}
+
 	}
 
-	// Calculate the outpout array size
-
-	int id = 0;
-	int len_uArray = 0;
-	int len_vArray = 0;
-	int len_uvCounts = 0;
-	int len_uvIds = 0;
-	for (int m = 0; m < m_numInputMeshes; m++)
+	if (has_uvs)
 	{
-		id = m;
 
-		len_uArray += v_in_uArray[id].length();
-		len_vArray += v_in_vArray[id].length();
-		len_uvCounts += v_in_uvCounts[id].length();
-		len_uvIds += v_in_uvIds[id].length();
+
+
+		// Calculate the outpout array size
+
+		int id = 0;
+		int len_uArray = 0;
+		int len_vArray = 0;
+		int len_uvCounts = 0;
+		int len_uvIds = 0;
+		for (int m = 0; m < m_numInputMeshes; m++)
+		{
+			id = m;
+
+			len_uArray += v_in_uArray[id].length();
+			len_vArray += v_in_vArray[id].length();
+			len_uvCounts += v_in_uvCounts[id].length();
+			len_uvIds += v_in_uvIds[id].length();
+
+		}
+
+
+
+		// Set output Array length
+
+		o_uArrayA.setLength(len_uArray);
+		o_vArrayA.setLength(len_vArray);
+		o_uvCountsA.setLength(len_uvCounts);
+		o_uvIdsA.setLength(len_uvIds);
+
+		int o_uArrayA_offset = 0;
+		int o_vArrayA_offset = 0;
+		int o_uvCountsA_offset = 0;
+		int o_uvIdsA_offset = 0;
+
+		id = 0;
+
+		float off_tileU = 0.0;
+		float off_tileV = 0.0;
+
+		for (int m = 0; m < m_numInputMeshes; m++)
+		{
+			id = m;
+#pragma omp parallel for
+			for (int v = 0; v < v_in_uArray[id].length(); v++) {
+				o_uArrayA.set(v_in_uArray[id][v] + off_tileU, v + o_uArrayA_offset);
+			}
+#pragma omp parallel for
+			for (int v = 0; v < v_in_vArray[id].length(); v++) {
+				o_vArrayA.set(v_in_vArray[id][v] + off_tileV, v + o_vArrayA_offset);
+			}
+#pragma omp parallel for
+			for (int v = 0; v < v_in_uvCounts[id].length(); v++) {
+				o_uvCountsA.set(v_in_uvCounts[id][v], v + o_uvCountsA_offset);
+			}
+#pragma omp parallel for
+			for (int v = 0; v < v_in_uvIds[id].length(); v++) {
+				o_uvIdsA.set(v_in_uvIds[id][v] + o_uArrayA_offset, v + o_uvIdsA_offset);
+			}
+
+			o_uArrayA_offset += v_in_uArray[id].length();
+			o_vArrayA_offset += v_in_vArray[id].length();
+			o_uvCountsA_offset += v_in_uvCounts[id].length();
+			o_uvIdsA_offset += v_in_uvIds[id].length();
+
+
+
+
+
+
+			// Stack UV's
+
+
+			//if (m_stackUV)
+			//{
+			//	off_tileU = m_uvOffsetU*m + m_rndOffsetU[m];
+			//	off_tileV = m_uvOffsetV + m_rndOffsetV[m];
+			//}
+
+
+
+			//MGlobal::displayInfo(MString() + "m_rndOffsetXA[m]: " +  m_rndOffsetXA[m]);
+
+		}
 
 	}
-
-
-
-	// Set output Array length
-
-	o_uArrayA.setLength(len_uArray);
-	o_vArrayA.setLength(len_vArray);
-	o_uvCountsA.setLength(len_uvCounts);
-	o_uvIdsA.setLength(len_uvIds);
-
-	int o_uArrayA_offset = 0;
-	int o_vArrayA_offset = 0;
-	int o_uvCountsA_offset = 0;
-	int o_uvIdsA_offset = 0;
-
-	id = 0;
-
-	float off_tileU = 0.0;
-	float off_tileV = 0.0;
-
-	for (int m = 0; m < m_numInputMeshes; m++)
-	{
-		id = m;
-#pragma omp parallel for
-		for (int v = 0; v < v_in_uArray[id].length(); v++) {
-			o_uArrayA.set(v_in_uArray[id][v] + off_tileU, v + o_uArrayA_offset);
-		}
-#pragma omp parallel for
-		for (int v = 0; v < v_in_vArray[id].length(); v++) {
-			o_vArrayA.set(v_in_vArray[id][v] + off_tileV, v + o_vArrayA_offset);
-		}
-#pragma omp parallel for
-		for (int v = 0; v < v_in_uvCounts[id].length(); v++) {
-			o_uvCountsA.set(v_in_uvCounts[id][v], v + o_uvCountsA_offset);
-		}
-#pragma omp parallel for
-		for (int v = 0; v < v_in_uvIds[id].length(); v++) {
-			o_uvIdsA.set(v_in_uvIds[id][v] + o_uArrayA_offset, v + o_uvIdsA_offset);
-		}
-
-		o_uArrayA_offset += v_in_uArray[id].length();
-		o_vArrayA_offset += v_in_vArray[id].length();
-		o_uvCountsA_offset += v_in_uvCounts[id].length();
-		o_uvIdsA_offset += v_in_uvIds[id].length();
-
-
-
-
-
-
-		// Stack UV's
-
-
-		//if (m_stackUV)
-		//{
-		//	off_tileU = m_uvOffsetU*m + m_rndOffsetU[m];
-		//	off_tileV = m_uvOffsetV + m_rndOffsetV[m];
-		//}
-
-
-
-		//MGlobal::displayInfo(MString() + "m_rndOffsetXA[m]: " +  m_rndOffsetXA[m]);
-
-	}
-
-
 
 	return MS::kSuccess;
 }
@@ -1998,19 +2029,21 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 		// flip uvs
-		
+
 		MIntArray		n_ouvIds;
 
 		int count = 0;
+
 
 		if (nuvIds.length() > 0)
 		{
 			for (int i = 0; i < nnumPolygons; i++)
 			{
 				count = count + npolygonCounts[i];
+
 				for (int j = 0; j < npolygonCounts[i]; j++) {
 					if (j == 0) {
-	
+
 						if (count - npolygonCounts[i] < nuvIds.length())
 						{
 							n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
@@ -2030,11 +2063,12 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 			o_uvIdsA = n_ouvIds;
-			o_uvCountsA = nuvCounts;
-			o_uArrayA = n_uArrayA;
-			o_vArrayA = n_vArrayA;
 
 		}
+
+		o_uvCountsA = nuvCounts;
+		o_uArrayA = n_uArrayA;
+		o_vArrayA = n_vArrayA;
 
 	}
 
@@ -2054,7 +2088,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			}
 			else {
 				tempArray.append(npolygonConnects[count - j]);
-	
+
 			}
 		}
 
@@ -2176,7 +2210,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	// Create combined Meshes
 
 
-	if (o_uArrayA.length() > 0)
+	if (o_uArrayA.length() > 0 && o_polygonConnects.length() > 0)
 	{
 
 
@@ -2208,7 +2242,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	MFnMeshData ex_meshDataFn;
 	MObject ex_newMeshData = ex_meshDataFn.create();
 
-	if (o_uArrayA.length() > 0)
+	if (o_uArrayA.length() > 0 && o_polygonConnects.length() > 0)
 	{
 		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, ex_newMeshData, &status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -2221,8 +2255,6 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, ex_newMeshData, &status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
-
-	//MGlobal::displayInfo(MString() + o_polygonConnects.length());
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally
@@ -2300,9 +2332,6 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	{
 		h_outPresetPath.setString(s_readPluginPath);
 	}
-
-
-	cerr << "dasdasdas";
 
 	//
 
