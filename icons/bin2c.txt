@@ -1,0 +1,1 @@
+.\bin2c.exe -t -o icons.h .\shellModNode_Refresh.png .\shellModNode_Trash.png .\shellModNode_Preset.png .\shellModNode_Plus.png .\shellModNode_Minus.png .\shellModNode_Plane.png .\shellModNode_CCLogo.png .\shellModNode_Apply.png .\shellModNode_Add.png .\out_shellMod.png .\shellModNode.png

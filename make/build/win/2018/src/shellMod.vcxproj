@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -119,7 +119,8 @@
       <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/src/Debug/shellMod.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/bin/Debug/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -140,7 +141,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR="Release";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR=\"Release\";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -163,7 +165,8 @@
       <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/src/Release/shellMod.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/bin/Release/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -184,7 +187,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR="MinSizeRel";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;REQUIRE_IOSTREAM;_BOOL;NT_PLUGIN;CMAKE_INTDIR=\"MinSizeRel\";shellMod_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -207,7 +211,8 @@
       <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/src/MinSizeRel/shellMod.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/bin/MinSizeRel/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -251,7 +256,8 @@
       <ImportLibrary>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/src/RelWithDebInfo/shellMod.lib</ImportLibrary>
       <ProgramDataBaseFile>C:/WORK/_admin/git/cc-maya-shellmod/make/build/win/2018/bin/RelWithDebInfo/shellMod.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -314,16 +320,17 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\icons_repo.h" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\AETemplate.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\DagUtils.cpp"  />
+    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\DagUtils.cpp" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\DagUtils.h" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\icons.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModCommand.cpp"  />
+    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModCommand.cpp" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModCommand.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModNode.cpp"  />
+    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModNode.cpp" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\ShellModNode.h" />
     <ClInclude Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\Utils.h" />
-    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\pluginMain.cpp"  />
+    <ClCompile Include="C:\WORK\_admin\git\cc-maya-shellmod\make\src\pluginMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\WORK\_admin\git\cc-maya-shellmod\make\build\win\2018\ZERO_CHECK.vcxproj">

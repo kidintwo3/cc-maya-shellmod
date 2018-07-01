@@ -629,36 +629,6 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 
 
 
-
-
-	// Store Crease Data
-
-	m_crease_vert_ids_extruded.clear();
-	m_crease_vert_data_extruded.clear();
-
-	m_crease_edge_ids_extruded.clear();
-	m_crease_edge_data_extruded.clear();
-
-	for (int i = 0; i < m_inMeshArray.length(); i++)
-	{
-
-		m_crease_vert_ids.clear();
-		m_crease_vert_data.clear();
-
-		m_crease_edge_ids.clear();
-		m_crease_edge_data.clear();
-
-		MFnMesh meshFn_iter(m_inMeshArray[i]);
-
-		// Store the original meshes edge creases
-		meshFn_iter.getCreaseVertices(m_crease_vert_ids, m_crease_vert_data);
-		meshFn_iter.getCreaseEdges(m_crease_edge_ids, m_crease_edge_data);
-
-	}
-
-
-
-
 	MIntArray isSubdivA;
 
 	// Iterate trhrough input meshes and collect Subdivision status
@@ -692,20 +662,13 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 					MPlug p_displaySmoothMesh = inMesh_dn.findPlug("displaySmoothMesh", &status);
 					CHECK_MSTATUS_AND_RETURN_IT(status);
 
-					/*				MPlug p_in_overrideEnable = inMesh_dn.findPlug("overrideEnabled", &status);
-					CHECK_MSTATUS_AND_RETURN_IT(status);
-					*/
+
 					m_isSmoothed = p_displaySmoothMesh.asInt();
-
-
 
 					// collect smooth plugs on all objects
 					isSubdivA.append(m_isSmoothed);
 
 
-					// Set override for main mesh shading - not possible
-					//p_in_overrideEnable.setBool(m_disableBaseMeshOverride);
-					// MGlobal::displayInfo(MString() + m_disableBaseMeshOverride);
 
 				}
 
@@ -713,58 +676,6 @@ MStatus shellModNode::collectInputMeshes(MDataBlock& data)
 
 		}
 
-		//MPlug p_displaySmoothMesh = inMesh_dn.findPlug("displaySmoothMesh", &status);
-		//CHECK_MSTATUS_AND_RETURN_IT(status);
-		//            
-		//            p_smoothLevelPlug = inMesh_dn.findPlug("smoothLevel", &status);
-		//            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
-
-		//m_isSmoothed = p_displaySmoothMesh.asInt();
-		//isSubdivA.append(m_isSmoothed);
-
-
-
-
-
-		//		if (p_inMesh[i].isConnected())
-		//		{
-		//			MPlug inMeshPlug = p_inMesh[i];
-		//
-		//			status = inMeshPlug.selectAncestorLogicalIndex(0);
-		//			CHECK_MSTATUS_AND_RETURN_IT(status);
-		//
-		//			MPlugArray inputs_plugArr;
-		//			inMeshPlug.connectedTo(inputs_plugArr, true, false, &status);
-		//			CHECK_MSTATUS_AND_RETURN_IT(status);
-		//
-		//			inMeshPlug = inputs_plugArr[0];
-		//
-		//			MFnDependencyNode inMesh_dn(inMeshPlug.node());
-		//
-		//			p_smoothMeshPlug = inMesh_dn.findPlug("displaySmoothMesh", &status);
-		//			CHECK_MSTATUS_AND_RETURN_IT(status);
-		//			p_smoothLevelPlug = inMesh_dn.findPlug("smoothLevel", &status);
-		//			CHECK_MSTATUS_AND_RETURN_IT(status);
-		//
-		//
-		//			m_isSmoothed = p_smoothMeshPlug.asInt();
-		//
-		//			// collect smooth plugs on all objects
-		//			isSubdivA.append(m_isSmoothed);
-		//
-		//			//// Reset the Catmull Clark Subdiv to default
-		//			//MPlug catmulBoundaryPlug = inMesh_dn.findPlug("boundaryRule");
-		//			//catmulBoundaryPlug.setInt(0);
-		//
-		//			MPlug osd_catmulBoundaryPlug = inMesh_dn.findPlug("osdVertBoundary");
-		//			osd_catmulBoundaryPlug.setInt(2);
-		//
-		//			//p_smoothLevelPlug.setInt(1);
-		//
-		//
-		//		}
 	}
 
 
@@ -1491,7 +1402,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								placements.clear();
 
 
-								float edgeFactor0 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeAId, (m_chamferEdgeFactor) * 0.5, mItVert.index());
+								float edgeFactor0 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeAId, (m_chamferEdgeFactor), mItVert.index());
 								edgeFactors.append(edgeFactor0);
 
 								//edgeFactors.append(m_chamferEdgeFactor);
@@ -1505,7 +1416,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								edgeIDs.clear();
 								placements.clear();
 
-								float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeBId, (m_chamferEdgeFactor) * 0.5, mItVert.index());
+								float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeBId, (m_chamferEdgeFactor) , mItVert.index());
 								edgeFactors.append(edgeFactor1);
 
 								//edgeFactors.append(1.0 - m_chamferEdgeFactor);
@@ -2310,7 +2221,9 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 		if (m_smoothNorm == false) { ex_meshFn.setEdgeSmoothing(loop, false); }
 	}
 
-	ex_meshFn.cleanupEdgeSmoothing();
+	status = ex_meshFn.cleanupEdgeSmoothing();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	status = ex_meshFn.updateSurface();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 

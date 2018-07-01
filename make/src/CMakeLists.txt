@@ -1,7 +1,7 @@
 set(SOURCE_FILES "AETemplate.h" "DagUtils.cpp" "DagUtils.h" "icons.h" "ShellModCommand.cpp" "ShellModCommand.h" "ShellModNode.cpp" "ShellModNode.h" "Utils.h" "pluginMain.cpp"
 )
 
-find_package(Maya REQUIRED)
+ find_package(Maya REQUIRED)
 
 include_directories(${MAYA_INCLUDE_DIR})
 link_directories(${MAYA_LIBRARY_DIR})
