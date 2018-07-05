@@ -25,6 +25,8 @@ MObject		shellModNode::aBulge;
 MObject		shellModNode::aCurveRamp;
 MObject		shellModNode::aBevelEdgesAngle;
 
+MObject		shellModNode::aGenerateUVs;
+
 MObject		shellModNode::aChamferEdges;
 MObject		shellModNode::aChamferEdgeFactor;
 
@@ -46,6 +48,8 @@ MObject		shellModNode::aUVScaleV;
 MObject		shellModNode::aOutputComponents;
 
 MObject		shellModNode::aDisableBaseMeshOverride;
+MObject		shellModNode::aDisableOutputMeshOverride;
+
 
 MObject		shellModNode::aPresetFolderPath;
 MString     shellModNode::pluginLoadPath;
@@ -562,10 +566,16 @@ MStatus shellModNode::collectPlugs(MDataBlock& data)
 	m_uvOffsetUAuto = data.inputValue(aUVOffsetUAuto, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	m_generateUVs = data.inputValue(aGenerateUVs, &status).asBool();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
 	m_uvOffsetUAutoPadding = data.inputValue(aUVOffsetUAutoPadding, &status).asDouble();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	m_disableBaseMeshOverride = data.inputValue(aDisableBaseMeshOverride, &status).asBool();
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	m_disableOutputMeshOverride = data.inputValue(aDisableOutputMeshOverride, &status).asBool();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	// Bevel
@@ -869,44 +879,45 @@ MStatus shellModNode::mergeInputMeshes()
 
 	}
 
-
-
-	if (has_uvs)
+	if (m_generateUVs)
 	{
 
-		if (m_reverseNormals)
+		if (has_uvs)
 		{
 
-
-
-
-			MIntArray revUVCA;
-			int co = o_uvCountsA.length() - 1;
-			for (unsigned i = 0; i < o_uvCountsA.length(); i++)
+			if (m_reverseNormals)
 			{
-				revUVCA.append(o_uvCountsA[co]);
-				co -= 1;
+
+
+
+
+				MIntArray revUVCA;
+				int co = o_uvCountsA.length() - 1;
+				for (unsigned i = 0; i < o_uvCountsA.length(); i++)
+				{
+					revUVCA.append(o_uvCountsA[co]);
+					co -= 1;
+				}
+
+				MIntArray revUVIDA;
+				co = o_uvIdsA.length() - 1;
+				for (unsigned i = 0; i < o_uvIdsA.length(); i++)
+				{
+					revUVIDA.append(o_uvIdsA[co]);
+					co -= 1;
+				}
+
+
+				o_uvCountsA = revUVCA;
+				o_uvIdsA = revUVIDA;
+
 			}
 
-			MIntArray revUVIDA;
-			co = o_uvIdsA.length() - 1;
-			for (unsigned i = 0; i < o_uvIdsA.length(); i++)
-			{
-				revUVIDA.append(o_uvIdsA[co]);
-				co -= 1;
-			}
 
-
-			o_uvCountsA = revUVCA;
-			o_uvIdsA = revUVIDA;
 
 		}
 
-
-
 	}
-
-
 
 
 	return MS::kSuccess;
@@ -927,7 +938,7 @@ MStatus shellModNode::generateUVs() {
 	o_uvIdsA.clear();
 
 	// Setup vectors for gathering base data from meshes
-	MString				defaultUVSetName;
+	//MString				defaultUVSetName;
 	MFloatArray         in_uArray;
 	MFloatArray         in_vArray;
 	MIntArray           in_uvCounts;
@@ -947,7 +958,7 @@ MStatus shellModNode::generateUVs() {
 	v_in_uvCounts.resize(vecSize);
 	v_in_uvIds.resize(vecSize);
 
-	bool has_uvs = false;
+
 
 	for (int i = 0; i < m_inMeshArray.length(); i++)
 	{
@@ -955,118 +966,111 @@ MStatus shellModNode::generateUVs() {
 		MFnMesh mFnA(m_inMeshArray[i]);
 
 
-		status = mFnA.getCurrentUVSetName(defaultUVSetName);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		//status = mFnA.getCurrentUVSetName(defaultUVSetName);
+		//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		status = mFnA.getUVs(in_uArray, in_vArray);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
-		status = mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		//status = mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
+		//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 		//v_defaultUVSetName[i] = defaultUVSetName;
-		o_defaultUVSetNameA = defaultUVSetName;
+		//o_defaultUVSetNameA = defaultUVSetName;
 		v_in_uArray[i] = in_uArray;
 		v_in_vArray[i] = in_vArray;
 		v_in_uvCounts[i] = in_uvCounts;
 		v_in_uvIds[i] = in_uvIds;
 
-		if (mFnA.numUVs() > 0)
-		{
-			has_uvs = true;
-		}
 
 	}
 
-	if (has_uvs)
+
+
+
+	// Calculate the outpout array size
+
+	int id = 0;
+	int len_uArray = 0;
+	int len_vArray = 0;
+	int len_uvCounts = 0;
+	int len_uvIds = 0;
+	for (int m = 0; m < m_numInputMeshes; m++)
 	{
+		id = m;
 
-
-
-		// Calculate the outpout array size
-
-		int id = 0;
-		int len_uArray = 0;
-		int len_vArray = 0;
-		int len_uvCounts = 0;
-		int len_uvIds = 0;
-		for (int m = 0; m < m_numInputMeshes; m++)
-		{
-			id = m;
-
-			len_uArray += v_in_uArray[id].length();
-			len_vArray += v_in_vArray[id].length();
-			len_uvCounts += v_in_uvCounts[id].length();
-			len_uvIds += v_in_uvIds[id].length();
-
-		}
-
-
-
-		// Set output Array length
-
-		o_uArrayA.setLength(len_uArray);
-		o_vArrayA.setLength(len_vArray);
-		o_uvCountsA.setLength(len_uvCounts);
-		o_uvIdsA.setLength(len_uvIds);
-
-		int o_uArrayA_offset = 0;
-		int o_vArrayA_offset = 0;
-		int o_uvCountsA_offset = 0;
-		int o_uvIdsA_offset = 0;
-
-		id = 0;
-
-		float off_tileU = 0.0;
-		float off_tileV = 0.0;
-
-		for (int m = 0; m < m_numInputMeshes; m++)
-		{
-			id = m;
-#pragma omp parallel for
-			for (int v = 0; v < v_in_uArray[id].length(); v++) {
-				o_uArrayA.set(v_in_uArray[id][v] + off_tileU, v + o_uArrayA_offset);
-			}
-#pragma omp parallel for
-			for (int v = 0; v < v_in_vArray[id].length(); v++) {
-				o_vArrayA.set(v_in_vArray[id][v] + off_tileV, v + o_vArrayA_offset);
-			}
-#pragma omp parallel for
-			for (int v = 0; v < v_in_uvCounts[id].length(); v++) {
-				o_uvCountsA.set(v_in_uvCounts[id][v], v + o_uvCountsA_offset);
-			}
-#pragma omp parallel for
-			for (int v = 0; v < v_in_uvIds[id].length(); v++) {
-				o_uvIdsA.set(v_in_uvIds[id][v] + o_uArrayA_offset, v + o_uvIdsA_offset);
-			}
-
-			o_uArrayA_offset += v_in_uArray[id].length();
-			o_vArrayA_offset += v_in_vArray[id].length();
-			o_uvCountsA_offset += v_in_uvCounts[id].length();
-			o_uvIdsA_offset += v_in_uvIds[id].length();
-
-
-
-
-
-
-			// Stack UV's
-
-
-			//if (m_stackUV)
-			//{
-			//	off_tileU = m_uvOffsetU*m + m_rndOffsetU[m];
-			//	off_tileV = m_uvOffsetV + m_rndOffsetV[m];
-			//}
-
-
-
-			//MGlobal::displayInfo(MString() + "m_rndOffsetXA[m]: " +  m_rndOffsetXA[m]);
-
-		}
+		len_uArray += v_in_uArray[id].length();
+		len_vArray += v_in_vArray[id].length();
+		len_uvCounts += v_in_uvCounts[id].length();
+		len_uvIds += v_in_uvIds[id].length();
 
 	}
+
+
+
+	// Set output Array length
+
+	o_uArrayA.setLength(len_uArray);
+	o_vArrayA.setLength(len_vArray);
+	o_uvCountsA.setLength(len_uvCounts);
+	o_uvIdsA.setLength(len_uvIds);
+
+	int o_uArrayA_offset = 0;
+	int o_vArrayA_offset = 0;
+	int o_uvCountsA_offset = 0;
+	int o_uvIdsA_offset = 0;
+
+	id = 0;
+
+	float off_tileU = 0.0;
+	float off_tileV = 0.0;
+
+	for (int m = 0; m < m_numInputMeshes; m++)
+	{
+		id = m;
+#pragma omp parallel for
+		for (int v = 0; v < v_in_uArray[id].length(); v++) {
+			o_uArrayA.set(v_in_uArray[id][v] + off_tileU, v + o_uArrayA_offset);
+		}
+#pragma omp parallel for
+		for (int v = 0; v < v_in_vArray[id].length(); v++) {
+			o_vArrayA.set(v_in_vArray[id][v] + off_tileV, v + o_vArrayA_offset);
+		}
+#pragma omp parallel for
+		for (int v = 0; v < v_in_uvCounts[id].length(); v++) {
+			o_uvCountsA.set(v_in_uvCounts[id][v], v + o_uvCountsA_offset);
+		}
+#pragma omp parallel for
+		for (int v = 0; v < v_in_uvIds[id].length(); v++) {
+			o_uvIdsA.set(v_in_uvIds[id][v] + o_uArrayA_offset, v + o_uvIdsA_offset);
+		}
+
+		o_uArrayA_offset += v_in_uArray[id].length();
+		o_vArrayA_offset += v_in_vArray[id].length();
+		o_uvCountsA_offset += v_in_uvCounts[id].length();
+		o_uvIdsA_offset += v_in_uvIds[id].length();
+
+
+
+
+
+
+		// Stack UV's
+
+
+		//if (m_stackUV)
+		//{
+		//	off_tileU = m_uvOffsetU*m + m_rndOffsetU[m];
+		//	off_tileV = m_uvOffsetV + m_rndOffsetV[m];
+		//}
+
+
+
+		//MGlobal::displayInfo(MString() + "m_rndOffsetXA[m]: " +  m_rndOffsetXA[m]);
+
+	}
+
 
 	return MS::kSuccess;
 }
@@ -1416,7 +1420,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 								edgeIDs.clear();
 								placements.clear();
 
-								float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeBId, (m_chamferEdgeFactor) , mItVert.index());
+								float edgeFactor1 = shellModNode::getNormalizedFactorOfEdge(itEdge_border, edgeBId, (m_chamferEdgeFactor), mItVert.index());
 								edgeFactors.append(edgeFactor1);
 
 								//edgeFactors.append(1.0 - m_chamferEdgeFactor);
@@ -1463,13 +1467,14 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	MIntArray ouvIds;
 
 
-	status = mFn.getCurrentUVSetName(o_defaultUVSetNameA);
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+	//status = mFn.getCurrentUVSetName(o_defaultUVSetNameA);
+	//CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = mFn.getUVs(ouArray, ovArray);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	status = mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);
+	/*status = mFn.getAssignedUVs(ouvCounts, ouvIds, &o_defaultUVSetNameA);*/
+	status = mFn.getAssignedUVs(ouvCounts, ouvIds);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
@@ -1554,11 +1559,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	numPoly = mFn.numPolygons();
 
 
-
 	for (int seg = segStart; seg < m_segments; seg++) // Iterate trough numbers of extrusions
 	{
-
-
 
 		status = mFn.extrudeFaces(numv, 1, &trVec, true);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1682,8 +1684,13 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 		m_vertConnA.push_back(m_vertConnA_segment);
 
-		status = mFn.setPoints(vertPoints, MSpace::kObject);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		if (vertPoints.length() > 0)
+		{
+			status = mFn.setPoints(vertPoints, MSpace::kObject);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+		}
+
+
 
 
 
@@ -1871,6 +1878,8 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 
+
+
 	// ---------------------------------------------------------------------
 	//	int nnumVertices = mFn.numVertices();
 	int nnumPolygons = mFn.numPolygons();
@@ -1885,148 +1894,6 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	int nNumVertecies = mFn.numVertices();
-
-
-
-	n_uArrayA.clear();
-	n_vArrayA.clear();
-
-
-	if (mFn.numUVs() > 0)
-	{
-
-
-		MIntArray nuvCounts;
-		MIntArray nuvIds;
-
-		status = mFn.getUVs(n_uArrayA, n_vArrayA);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-		status = mFn.getAssignedUVs(nuvCounts, nuvIds, &o_defaultUVSetNameA);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-
-
-
-		// Pre transform UVs
-
-		if (n_uArrayA.length() > 0)
-		{
-
-			double centerU, centerV;
-
-			for (int i = 0; i < n_uArrayA.length(); i++)
-			{
-				centerU += n_uArrayA[i];
-				centerV += n_vArrayA[i];
-			}
-
-			centerU /= n_uArrayA.length();
-			centerV /= n_vArrayA.length();
-
-
-			MPoint rotUVP;
-			double rotAxis = (m_uvRotate + 180.000)  * (M_PI / 180.0);
-
-			for (int i = 0; i < n_uArrayA.length(); i++)
-			{
-
-				n_uArrayA[i] *= m_uvScaleU;
-				n_vArrayA[i] *= m_uvScaleV;
-
-				rotUVP = shellModNode::rotate_point(n_uArrayA[i], n_vArrayA[i], rotAxis, MPoint(centerU, centerV, 0.0));
-
-				n_uArrayA[i] = rotUVP.x + centerU;
-				n_vArrayA[i] = rotUVP.y + centerV;
-
-				n_uArrayA[i] += m_uvTranslateU;
-				n_vArrayA[i] += m_uvTranslateV;
-
-
-			}
-
-		}
-
-		// ---------------------------------------------------------------------
-		// If auto U UV Offset is turned on
-		if (m_uvOffsetUAuto)
-		{
-
-			// Calculate min max U
-			double uMin = n_uArrayA[0];
-			double uMax = n_uArrayA[0];
-
-#pragma omp parallel for
-			for (int i = 0; i < n_uArrayA.length(); i++)
-			{
-				if (n_uArrayA[i] > uMax)
-				{
-					uMax = n_uArrayA[i];
-				}
-				else if (n_uArrayA[i] < uMin)
-				{
-					uMin = n_uArrayA[i];
-				}
-			}
-
-			double uMinMaxDist = uMax - uMin;
-
-			m_uvOffsetU = uMinMaxDist + m_uvOffsetUAutoPadding;
-
-		}
-
-		// Offset new UV's
-		int uvAL = ouArray.length();
-
-#pragma omp parallel for
-		for (int i = uvAL; i < uvAL * 2; i++)
-		{
-			n_uArrayA[i] = n_uArrayA[i] + float(m_uvOffsetU);
-			n_vArrayA[i] = n_vArrayA[i] + float(m_uvOffsetV);
-		}
-
-
-		// flip uvs
-
-		MIntArray		n_ouvIds;
-
-		int count = 0;
-
-
-		if (nuvIds.length() > 0)
-		{
-			for (int i = 0; i < nnumPolygons; i++)
-			{
-				count = count + npolygonCounts[i];
-
-				for (int j = 0; j < npolygonCounts[i]; j++) {
-					if (j == 0) {
-
-						if (count - npolygonCounts[i] < nuvIds.length())
-						{
-							n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
-						}
-
-					}
-					else {
-						if (count - npolygonCounts[i] < nuvIds.length())
-						{
-							n_ouvIds.append(nuvIds[count - j]);
-						}
-					}
-				}
-
-
-			}
-
-
-			o_uvIdsA = n_ouvIds;
-
-		}
-
-		o_uvCountsA = nuvCounts;
-		o_uArrayA = n_uArrayA;
-		o_vArrayA = n_vArrayA;
-
-	}
 
 
 	// flip normals
@@ -2052,6 +1919,7 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	}
 
 
+
 	// Replace old array with reversed array (Flip uv's and normals)
 
 	o_vertexArray = nvertexArray;
@@ -2059,6 +1927,193 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 	o_numPolygons = nnumPolygons;
 	o_polygonCounts = npolygonCounts;
 	o_polygonConnects = tempArray;
+
+
+	if (m_generateUVs)
+	{
+
+		// UVs
+
+		n_uArrayA.clear();
+		n_vArrayA.clear();
+
+
+		if (mFn.numUVs() > 0)
+		{
+
+
+			MIntArray nuvCounts;
+			MIntArray nuvIds;
+
+			status = mFn.getUVs(n_uArrayA, n_vArrayA);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+
+
+			if (!status)
+			{
+				MGlobal::displayWarning(MString() + "[ShellMod] - Could not get UVs");
+				o_uvCountsA.clear();
+				o_uArrayA.clear();
+				o_vArrayA.clear();
+				return MS::kSuccess;
+			}
+
+
+			double centerU = 0.0;
+			double centerV = 0.0;
+
+
+
+
+			/*status = mFn.getAssignedUVs(nuvCounts, nuvIds, &o_defaultUVSetNameA);*/
+			status = mFn.getAssignedUVs(nuvCounts, nuvIds);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+
+			o_uvIdsA = nuvIds;
+
+
+			if (!status)
+			{
+				MGlobal::displayWarning(MString() + "[ShellMod] - Could not get UVs on mesh");
+				o_uvCountsA.clear();
+				o_uArrayA.clear();
+				o_vArrayA.clear();
+				return MS::kSuccess;
+			}
+
+
+			// Pre transform UVs
+
+			if (n_uArrayA.length() > 0)
+			{
+
+				for (int i = 0; i < n_uArrayA.length(); i++)
+				{
+					centerU += n_uArrayA[i];
+					centerV += n_vArrayA[i];
+				}
+
+				centerU /= n_uArrayA.length();
+				centerV /= n_vArrayA.length();
+
+				MPoint rotUVP;
+				double rotAxis = (m_uvRotate + 180.000)  * (M_PI / 180.0);
+
+				for (int i = 0; i < n_uArrayA.length(); i++)
+				{
+
+					n_uArrayA[i] *= m_uvScaleU;
+					n_vArrayA[i] *= m_uvScaleV;
+
+					rotUVP = shellModNode::rotate_point(n_uArrayA[i], n_vArrayA[i], rotAxis, MPoint(centerU, centerV, 0.0));
+
+					n_uArrayA[i] = rotUVP.x + centerU;
+					n_vArrayA[i] = rotUVP.y + centerV;
+
+					n_uArrayA[i] += m_uvTranslateU;
+					n_vArrayA[i] += m_uvTranslateV;
+
+
+				}
+
+			}
+
+			// ---------------------------------------------------------------------
+			// If auto U UV Offset is turned on
+			if (m_uvOffsetUAuto)
+			{
+
+				// Calculate min max U
+				double uMin = n_uArrayA[0];
+				double uMax = n_uArrayA[0];
+
+#pragma omp parallel for
+				for (int i = 0; i < n_uArrayA.length(); i++)
+				{
+					if (n_uArrayA[i] > uMax)
+					{
+						uMax = n_uArrayA[i];
+					}
+					else if (n_uArrayA[i] < uMin)
+					{
+						uMin = n_uArrayA[i];
+					}
+				}
+
+				double uMinMaxDist = uMax - uMin;
+
+				m_uvOffsetU = uMinMaxDist + m_uvOffsetUAutoPadding;
+
+			}
+
+			// Offset new UV's
+			int uvAL = ouArray.length();
+
+#pragma omp parallel for
+			for (int i = uvAL; i < uvAL * 2; i++)
+			{
+				n_uArrayA[i] = n_uArrayA[i] + float(m_uvOffsetU);
+				n_vArrayA[i] = n_vArrayA[i] + float(m_uvOffsetV);
+			}
+
+
+			// flip uvs
+
+			MIntArray		n_ouvIds;
+
+			int count = 0;
+
+
+			if (nuvIds.length() > 0)
+			{
+				for (int i = 0; i < nnumPolygons; i++)
+				{
+					count = count + npolygonCounts[i];
+
+					for (int j = 0; j < npolygonCounts[i]; j++) {
+						if (j == 0) {
+
+							if (count - npolygonCounts[i] < nuvIds.length())
+							{
+								n_ouvIds.append(nuvIds[count - npolygonCounts[i]]);
+							}
+
+						}
+						else {
+							if (count - npolygonCounts[i] < nuvIds.length())
+							{
+								n_ouvIds.append(nuvIds[count - j]);
+							}
+						}
+					}
+
+
+				}
+
+
+				o_uvIdsA = n_ouvIds;
+
+			}
+
+
+
+			o_uvCountsA = nuvCounts;
+			o_uArrayA = n_uArrayA;
+			o_vArrayA = n_vArrayA;
+
+
+
+		}
+
+		else
+		{
+			o_uvCountsA.clear();
+			o_uArrayA.clear();
+			o_vArrayA.clear();
+		}
+	}
 
 
 	return MS::kSuccess;
@@ -2134,13 +2189,21 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	// Set profile preset
 	profilePresets(m_profilePreset);
 
+
 	// Collect input meshes
 	status = collectInputMeshes(data);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-	// Merge uv's
-	status = generateUVs();
-	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+
+	if (m_generateUVs)
+	{
+		// Merge uv's
+		status = generateUVs();
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
+
+
 
 	//
 
@@ -2150,8 +2213,6 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	// --------------
-
-
 
 
 
@@ -2166,22 +2227,20 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	// Create combined Meshes
 
 
-	if (o_uArrayA.length() > 0 && o_polygonConnects.length() > 0)
+	meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, newMeshData, &status);
+	CHECK_MSTATUS_AND_RETURN_IT(status);
+
+	if (m_generateUVs)
 	{
 
-
-		meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, newMeshData, &status);
+		status = meshFn.setUVs(o_uArrayA, o_vArrayA);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
-		status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
+
+		/*status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);*/
+		status = meshFn.assignUVs(o_uvCountsA, o_uvIdsA);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
 
-	else
-	{
-
-		meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, newMeshData, &status);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-	}
 
 
 	extrudeMesh(newMeshData);
@@ -2198,19 +2257,23 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	MFnMeshData ex_meshDataFn;
 	MObject ex_newMeshData = ex_meshDataFn.create();
 
-	if (o_uArrayA.length() > 0 && o_polygonConnects.length() > 0)
-	{
-		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, o_uArrayA, o_vArrayA, ex_newMeshData, &status);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-		status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
-	}
-
-	else
+	if (o_polygonConnects.length() != 0)
 	{
 		ex_meshFn.create(o_numVertices, o_numPolygons, o_vertexArray, o_polygonCounts, o_polygonConnects, ex_newMeshData, &status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 	}
+
+	if (m_generateUVs)
+	{
+
+		status = ex_meshFn.setUVs(o_uArrayA, o_vArrayA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+
+		/*status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);*/
+		status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
+	}
+
 
 	// ------------------------------------------------------------------------------
 	// Set edge smoothing globally
@@ -2294,7 +2357,7 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	//
 
 
-	return status;
+	return MStatus::kSuccess;
 }
 
 MStatus shellModNode::initialize()
@@ -2381,14 +2444,20 @@ MStatus shellModNode::initialize()
 	status = addAttribute(shellModNode::aChamferEdges);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
-
-
 	shellModNode::aUVOffsetUAuto = nAttr.create("uvOffsetUAutoOffset", "uvOffsetUAutoOffset", MFnNumericData::kBoolean);
 	nAttr.setStorable(true);
 	nAttr.setDefault(false);
 	nAttr.setKeyable(true);
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aUVOffsetUAuto);
+
+
+	shellModNode::aGenerateUVs = nAttr.create("generateUVs", "generateUVs", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(false);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aGenerateUVs);
 
 	shellModNode::aUVOffsetUAutoPadding = nAttr.create("uvOffsetUAutoOffsetPadding", "uvOffsetUAutoOffsetPadding", MFnNumericData::kDouble);
 	nAttr.setStorable(true);
@@ -2407,6 +2476,13 @@ MStatus shellModNode::initialize()
 	nAttr.setChannelBox(true);
 	addAttribute(shellModNode::aDisableBaseMeshOverride);
 
+
+	shellModNode::aDisableOutputMeshOverride = nAttr.create("outputMeshDisplayOverride", "outputMeshDisplayOverride", MFnNumericData::kBoolean);
+	nAttr.setStorable(true);
+	nAttr.setDefault(true);
+	nAttr.setKeyable(true);
+	nAttr.setChannelBox(true);
+	addAttribute(shellModNode::aDisableOutputMeshOverride);
 
 
 	shellModNode::aOffsetZ = nAttr.create("offsetZ", "offsetZ", MFnNumericData::kDouble);
@@ -2610,6 +2686,8 @@ MStatus shellModNode::initialize()
 	attributeAffects(shellModNode::aBulge, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aCurveRamp, shellModNode::aOutMesh);
 
+	
+
 	attributeAffects(shellModNode::aUVOffsetU, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVOffsetV, shellModNode::aOutMesh);
 
@@ -2619,12 +2697,15 @@ MStatus shellModNode::initialize()
 	attributeAffects(shellModNode::aUVScaleU, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVScaleV, shellModNode::aOutMesh);
 
+	attributeAffects(shellModNode::aGenerateUVs, shellModNode::aOutMesh);
+
 	attributeAffects(shellModNode::aUVOffsetUAuto, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVOffsetUAutoPadding, shellModNode::aOutMesh);
 
 	//attributeAffects(shellModNode::aDisplaySmoothMesh, shellModNode::aOutMesh);
 
 	attributeAffects(shellModNode::aDisableBaseMeshOverride, shellModNode::aOutMesh);
+	attributeAffects(shellModNode::aDisableOutputMeshOverride, shellModNode::aOutMesh);
 
 	attributeAffects(shellModNode::aBevelEdgesAngle, shellModNode::aOutMesh);
 

@@ -22,6 +22,8 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	
 	editorTemplate -addSeparator;
 	editorTemplate -addControl "baseMeshDisplayOverride";
+	editorTemplate -addSeparator;
+	editorTemplate -addControl "outputMeshDisplayOverride";
 
 	AEaddRampControl( $nodeName + ".profileRamp" );
 	editorTemplate -addControl "profileStrength";
@@ -35,6 +37,8 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	editorTemplate -endLayout;
 
 	editorTemplate -beginLayout "UV options" -collapse 0;
+	editorTemplate -addControl "generateUVs";
+	editorTemplate -addSeparator;
 	editorTemplate -addControl "uvTranslateU";
 	editorTemplate -addControl "uvTranslateV";
 	editorTemplate -addSeparator;

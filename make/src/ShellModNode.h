@@ -119,6 +119,8 @@ public:
 	static MObject				aBevelEdgesAngle;
 	static MObject				aSmoothSubdiv;
 
+	static MObject				aGenerateUVs;
+
 	static MObject				aChamferEdges;
 	static MObject				aChamferEdgeFactor;
 
@@ -148,6 +150,8 @@ public:
 	//static MObject				aDisplaySmoothMesh;
 
 	static MObject				aDisableBaseMeshOverride;
+	static MObject				aDisableOutputMeshOverride;
+
 
 	static MTypeId				id;
 
@@ -213,6 +217,7 @@ private:
 	bool						m_reverseNormals;
 	bool						m_straightEdges;
 	bool						m_chamferEdges;
+	bool						m_generateUVs;
 	double						m_chamferEdgeFactor;
 	double						m_straightEdgesAngle;
 	bool						m_autoSegments;
@@ -276,6 +281,7 @@ private:
 	MVectorArray				o_faceVertexNormals;
 
 	bool						m_disableBaseMeshOverride;
+	bool						m_disableOutputMeshOverride;
 
 	// UV's
 	MFloatArray					o_uArrayA;

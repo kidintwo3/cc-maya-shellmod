@@ -694,6 +694,21 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		MPlug p_shellModMultiNode_outMesh = fnDepShellMod.findPlug( "outMesh" );
 		MPlug p_shellModMultiMesh_inMesh = fnDepshellModOutputMeshShape.findPlug( "inMesh" );
 
+
+		MPlug p_shellModMultiNode_overrideEnabled = fnDepShellMod.findPlug("outputMeshDisplayOverride");
+
+		MPlug p_mesh_overrideEnabled = fnDepshellModOutputMeshShape.findPlug("overrideEnabled");
+
+
+		if (!p_mesh_overrideEnabled.isConnected())
+		{
+
+			status = m_DGMod.connect(p_shellModMultiNode_overrideEnabled, p_mesh_overrideEnabled);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+			m_DGMod.doIt();
+
+		}
+
 		
 		// Set default ramp
 		const float f_ramp_values[] = { 0.0, 1.0, 1.0, 0.0 };

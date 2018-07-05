@@ -21,20 +21,31 @@ MStatus initializePlugin(MObject obj)
 	MStatus status;
 
 
-
-	//MGlobal::executeCommand( mel_deleteShelf() );
+	if (!std::getenv("SHELLMOD_REBUILDICONS"))
+	{
+		icons_data_write();
+	}
 
 
 	if (!std::getenv("SHELLMOD_REBUILDSHELF"))
 	{
 		icons_data_write();
 		MGlobal::executeCommand(mel_createShelf());
-		MGlobal::executeCommand(mel_AETemplate());
 	} 
 
+	MStringArray aeTemplateA = mel_AETemplate();
+
+	for (int i = 0; i < aeTemplateA.length(); i++)
+	{
+		MGlobal::executeCommand(aeTemplateA[i]);
+	}
 
 
-	MFnPlugin fnPlugin(obj, "Creative Case", "2.1", "Any");
+
+
+
+
+	MFnPlugin fnPlugin(obj, "Creative Case", "2.2", "Any");
 
 	status = fnPlugin.registerCommand("shellModCommand", ShellModCommand::creator, ShellModCommand::newSyntax);
 	CHECK_MSTATUS_AND_RETURN_IT(status);
