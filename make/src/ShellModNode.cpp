@@ -724,7 +724,7 @@ MStatus shellModNode::mergeInputMeshes()
 	i_polygonCounts.resize(m_numInputMeshes);
 	i_polygonConnects.resize(m_numInputMeshes);
 
-	bool has_uvs = false;
+
 
 	for (int m = 0; m < m_numInputMeshes; m++)
 	{
@@ -739,10 +739,7 @@ MStatus shellModNode::mergeInputMeshes()
 		mfnMesh.getPoints(i_vertexArray[m], MSpace::kWorld);
 		mfnMesh.getVertices(i_polygonCounts[m], i_polygonConnects[m]);
 
-		if (mfnMesh.numUVs() > 0)
-		{
-			has_uvs = true;
-		}
+
 	}
 
 	// Allocate memory for vector
@@ -882,40 +879,35 @@ MStatus shellModNode::mergeInputMeshes()
 	if (m_generateUVs)
 	{
 
-		if (has_uvs)
+
+
+		if (m_reverseNormals)
 		{
 
-			if (m_reverseNormals)
+
+			MIntArray revUVCA;
+			int co = o_uvCountsA.length() - 1;
+			for (unsigned i = 0; i < o_uvCountsA.length(); i++)
 			{
+				revUVCA.append(o_uvCountsA[co]);
+				co -= 1;
+			}
 
-
-
-
-				MIntArray revUVCA;
-				int co = o_uvCountsA.length() - 1;
-				for (unsigned i = 0; i < o_uvCountsA.length(); i++)
-				{
-					revUVCA.append(o_uvCountsA[co]);
-					co -= 1;
-				}
-
-				MIntArray revUVIDA;
-				co = o_uvIdsA.length() - 1;
-				for (unsigned i = 0; i < o_uvIdsA.length(); i++)
-				{
-					revUVIDA.append(o_uvIdsA[co]);
-					co -= 1;
-				}
-
-
-				o_uvCountsA = revUVCA;
-				o_uvIdsA = revUVIDA;
-
+			MIntArray revUVIDA;
+			co = o_uvIdsA.length() - 1;
+			for (unsigned i = 0; i < o_uvIdsA.length(); i++)
+			{
+				revUVIDA.append(o_uvIdsA[co]);
+				co -= 1;
 			}
 
 
+			o_uvCountsA = revUVCA;
+			o_uvIdsA = revUVIDA;
 
 		}
+
+
 
 	}
 
@@ -973,7 +965,8 @@ MStatus shellModNode::generateUVs() {
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		//status = mFnA.getAssignedUVs(in_uvCounts, in_uvIds, &defaultUVSetName);
-		//CHECK_MSTATUS_AND_RETURN_IT(status);
+		status = mFnA.getAssignedUVs(in_uvCounts, in_uvIds);
+		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 
 		//v_defaultUVSetName[i] = defaultUVSetName;
@@ -1951,14 +1944,14 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 
 
 
-			if (!status)
-			{
-				MGlobal::displayWarning(MString() + "[ShellMod] - Could not get UVs");
-				o_uvCountsA.clear();
-				o_uArrayA.clear();
-				o_vArrayA.clear();
-				return MS::kSuccess;
-			}
+			//if (!status)
+			//{
+			//	MGlobal::displayWarning(MString() + "[ShellMod] - Could not get UVs");
+			//	o_uvCountsA.clear();
+			//	o_uArrayA.clear();
+			//	o_vArrayA.clear();
+			//	return MS::kSuccess;
+			//}
 
 
 			double centerU = 0.0;
@@ -1974,14 +1967,14 @@ MStatus shellModNode::extrudeMesh(MObject& o_mergedMesh)
 			o_uvIdsA = nuvIds;
 
 
-			if (!status)
+	/*		if (!status)
 			{
 				MGlobal::displayWarning(MString() + "[ShellMod] - Could not get UVs on mesh");
 				o_uvCountsA.clear();
 				o_uArrayA.clear();
 				o_vArrayA.clear();
 				return MS::kSuccess;
-			}
+			}*/
 
 
 			// Pre transform UVs
@@ -2686,7 +2679,7 @@ MStatus shellModNode::initialize()
 	attributeAffects(shellModNode::aBulge, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aCurveRamp, shellModNode::aOutMesh);
 
-	
+
 
 	attributeAffects(shellModNode::aUVOffsetU, shellModNode::aOutMesh);
 	attributeAffects(shellModNode::aUVOffsetV, shellModNode::aOutMesh);
