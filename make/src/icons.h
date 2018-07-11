@@ -8,7 +8,7 @@ void writeIcon_binary(MString path, MString filename, const unsigned char output
 
 	ofstream myfile;
 
-	myfile.open(MString(path + filename).asChar());
+	myfile.open(MString(path + filename).asChar(), ios::out | ios::binary);
 	myfile.write((char *)output, char_size);
 	myfile.close();
 	MGlobal::displayInfo(MString() + "[ShellMod] Created icon: " + path + filename);

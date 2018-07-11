@@ -313,6 +313,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\icons_repo.h" />
     <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\AETemplate.h" />
     <ClCompile Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\DagUtils.cpp" />
     <ClInclude Include="C:\Users\janos.hunyadi\Documents\GitHub\cc-maya-shellmod\make\src\DagUtils.h" />
