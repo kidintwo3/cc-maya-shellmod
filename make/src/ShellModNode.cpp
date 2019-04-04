@@ -2259,12 +2259,16 @@ MStatus shellModNode::compute(const MPlug& plug, MDataBlock& data)
 	if (m_generateUVs)
 	{
 
-		status = ex_meshFn.setUVs(o_uArrayA, o_vArrayA);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		if (o_uvIdsA.length() > 0) 
+		{
 
-		/*status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);*/
-		status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA);
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+			status = ex_meshFn.setUVs(o_uArrayA, o_vArrayA);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+
+			/*status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA, &o_defaultUVSetNameA);*/
+			status = ex_meshFn.assignUVs(o_uvCountsA, o_uvIdsA);
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+		}
 	}
 
 
