@@ -1,9 +1,9 @@
 //
 //  AETemplates.h
-//  clonerMulti
+//  shellMod
 //
-//  Created by Janos Hunyadi on 2018.07.05
-//  Copyright (c) 2018. Janos Hunyadi. All rights reserved.
+//  Created by Janos Hunyadi on 2020.02.12
+//  Copyright (c) 2020. Janos Hunyadi. All rights reserved.
 //
 
 
@@ -79,6 +79,7 @@ MStringArray mel_AETemplate()
 		"\	editorTemplate -endLayout;\r\n"
 		"\	\r\n"
 		"\	editorTemplate -beginLayout \"Global settings\" -collapse 0;\r\n"
+		"\	editorTemplate -callCustom \"AE_apply_ShellMod_create\" \"AE_apply_ShellMod_edit\" \"\";\r\n"
 		"\	editorTemplate -callCustom \"AE_del_ShellMod_create\" \"AE_del_ShellMod_edit\" \"\";\r\n"
 		"\	\r\n"
 		"\	editorTemplate -endLayout;\r\n"
@@ -223,15 +224,7 @@ MStringArray mel_AETemplate()
 		"\r\n"
 		"\r\n"
 		"// --------------\r\n"
-		;
-
-	s_aeTemplate_A.append(s_aeTemplate_000);
-
-	// ---------------
-	// Row 000
-	// ---------------
-
-	MString s_aeTemplate_001 = "// Custom profile\r\n"
+		"// Custom profile\r\n"
 		"global proc AE_refresh_customProfile_ShellMod(string $nodeName)\r\n"
 		"{\r\n"
 		"    \r\n"
@@ -354,6 +347,17 @@ MStringArray mel_AETemplate()
 		"\r\n"
 		"// ----------------------------\r\n"
 		"// Global window Create / Edit\r\n"
+		"global proc AE_apply_ShellMod_create(string $attrName)\r\n"
+		"{\r\n"
+		"\	string $nodeName[];\r\n"
+		"    tokenize($attrName, \".\", $nodeName);\r\n"
+		"    iconTextButton -h 22 -style \"iconAndTextHorizontal\" -image1 \"shellModNode_Apply.png\" -label \"Apply ShellMod for selected object\"  -bgc 0.3 0.3 0.3 -c  (\"AE_apply_ShellMod \" + $nodeName[0] );\r\n"
+		"}\r\n"
+		"\r\n"
+		"global proc AE_apply_ShellMod_edit(string $attrName)\r\n"
+		"{\r\n"
+		"}\r\n"
+		"\r\n"
 		"global proc AE_del_ShellMod_create(string $attrName)\r\n"
 		"{\r\n"
 		"\	string $nodeName[];\r\n"
@@ -364,8 +368,13 @@ MStringArray mel_AETemplate()
 		"global proc AE_del_ShellMod_edit(string $attrName)\r\n"
 		"{\r\n"
 		"}\r\n"
-		"\r\n"
 		"// ----------------------------\r\n"
+		"// Apply shellmod from object\r\n"
+		"global proc AE_apply_ShellMod(string $attrName)\r\n"
+		"{\r\n"
+		"shellModCommand -app;\r\n"
+		"}\r\n"
+		"\r\n"
 		"// Remove shellmod from object\r\n"
 		"global proc AE_remove_ShellMod(string $attrName)\r\n"
 		"{\r\n"
@@ -399,15 +408,12 @@ MStringArray mel_AETemplate()
 		"}"
 		;
 
-	s_aeTemplate_A.append(s_aeTemplate_001);
+	s_aeTemplate_A.append(s_aeTemplate_000);
 
 
 
 	return s_aeTemplate_A;
 }
-
-
-
 
 
 MString mel_createShelf()

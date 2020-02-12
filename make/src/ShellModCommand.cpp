@@ -31,20 +31,21 @@ MSyntax ShellModCommand::newSyntax()
 {
 	MSyntax syntax;
 
-	syntax.addFlag( "-a", "-addObjects" );
-	syntax.addFlag( "-r", "-remove");
+	syntax.addFlag("-a", "-addObjects");
+	syntax.addFlag("-r", "-remove");
+	syntax.addFlag("-app", "-apply");
 
-	syntax.addFlag( "-sp", "-savePreset", MSyntax::kString  );
-	syntax.addFlag( "-lp", "-loadPreset", MSyntax::kString  );
+	syntax.addFlag("-sp", "-savePreset", MSyntax::kString);
+	syntax.addFlag("-lp", "-loadPreset", MSyntax::kString);
 
-	syntax.addFlag( "-sm", "-shellModNode", MSyntax::kString  );
-	syntax.addFlag( "-pp", "-presetPath", MSyntax::kString  );
+	syntax.addFlag("-sm", "-shellModNode", MSyntax::kString);
+	syntax.addFlag("-pp", "-presetPath", MSyntax::kString);
 
-	syntax.setObjectType( MSyntax::kSelectionList, 1, 1 );
-	syntax.useSelectionAsDefault( true );
+	syntax.setObjectType(MSyntax::kSelectionList, 1, 1);
+	syntax.useSelectionAsDefault(true);
 
-	syntax.enableEdit( false );
-	syntax.enableQuery( false );
+	syntax.enableEdit(false);
+	syntax.enableQuery(false);
 
 	return syntax;
 }
@@ -111,18 +112,18 @@ MStatus ShellModCommand::assignInitialShadingGroup(MObject& oMesh)
 	return MS::kSuccess;
 }
 
-MStatus ShellModCommand::doIt( const MArgList& argList )
+MStatus ShellModCommand::doIt(const MArgList& argList)
 {
 	MStatus status;
 
-	MArgDatabase argData( syntax(), argList, &status );
+	MArgDatabase argData(syntax(), argList, &status);
 
 
 
 	// -----------------------------------------------------------------------------------------
 	// SAVE PRESET TO SHELLMOD
 	// shellModCommand -sp "test" -sm "shellModNode1";
-	if ( argData.isFlagSet( "-sp" ) )
+	if (argData.isFlagSet("-sp"))
 	{
 
 		MString s_presetName;
@@ -132,7 +133,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		argData.getFlagArgument("-sp", 0, s_presetName);
 
 
-		if (!argData.isFlagSet( "-sm" ))
+		if (!argData.isFlagSet("-sm"))
 		{
 			MGlobal::displayError(MString() + "[Shellmod] No ShellMod name set for command (use the -sm flag to set)");
 			return MStatus::kFailure;
@@ -140,7 +141,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		argData.getFlagArgument("-sm", 0, s_shellmodNodeName);
 
-		if (!argData.isFlagSet( "-pp" ))
+		if (!argData.isFlagSet("-pp"))
 		{
 			MGlobal::displayError(MString() + "[Shellmod] Preset path name set for command (use the -pp flag to set)");
 			return MStatus::kFailure;
@@ -153,7 +154,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		MObject MObj;
 		MSelectionList selList;
 		selList.add(s_shellmodNodeName);
-		selList.getDependNode(0,MObj);
+		selList.getDependNode(0, MObj);
 
 		MFnDependencyNode mfDgN(MObj);
 
@@ -171,7 +172,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 	// -----------------------------------------------------------------------------------------
 	// LOAD PRESET TO SHELLMOD
 	// shellModCommand -lp "testName";
-	else if ( argData.isFlagSet( "-lp" ) )
+	else if (argData.isFlagSet("-lp"))
 	{
 		MString s_presetName;
 		MString s_shellmodNodeName;
@@ -179,7 +180,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		argData.getFlagArgument("-lp", 0, s_presetName);
 
-		if (!argData.isFlagSet( "-sm" ))
+		if (!argData.isFlagSet("-sm"))
 		{
 			MGlobal::displayError(MString() + "[Shellmod] No ShellMod name set for command (use the -sm flag to set)");
 			return MStatus::kFailure;
@@ -187,7 +188,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		argData.getFlagArgument("-sm", 0, s_shellmodNodeName);
 
-		if (!argData.isFlagSet( "-pp" ))
+		if (!argData.isFlagSet("-pp"))
 		{
 			MGlobal::displayError(MString() + "[Shellmod] Preset path name set for command (use the -pp flag to set)");
 			return MStatus::kFailure;
@@ -199,7 +200,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		MObject MObj;
 		MSelectionList selList;
 		selList.add(s_shellmodNodeName);
-		selList.getDependNode(0,MObj);
+		selList.getDependNode(0, MObj);
 
 		MFnDependencyNode mfDgN(MObj);
 
@@ -224,8 +225,6 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		return MStatus::kSuccess;
 	}
-
-
 
 
 	// ------------------------------------------------------------------------------------------------------
@@ -256,7 +255,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 	// -----------------------------------------------------------------------------------------
 	// ADD SELECTED OBJECTS TO SHELLMOD
 	// shellModCommand -a;
-	if ( argData.isFlagSet( "-a" ) )
+	if (argData.isFlagSet("-a"))
 	{
 
 		// Check if at least 2 objects are selected
@@ -271,7 +270,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		MFnDagNode dgNode(p_currSelShapeA[0]);
 
-		MPlug aliasList = dgNode.findPlug( "worldMesh", status );
+		MPlug aliasList = dgNode.findPlug("worldMesh", status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		if (!aliasList[0].isConnected())
@@ -301,12 +300,12 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		MFnDependencyNode depN(destPlug.node());
 
-		MGlobal::displayInfo(MString() + "[Shellmod] Connected ShellMod Node " + depN.name() );
+		MGlobal::displayInfo(MString() + "[Shellmod] Connected ShellMod Node " + depN.name());
 
 
 		MPlug p_inMesh = depN.findPlug("inMesh", status);
 
-		MGlobal::displayInfo(MString() + "[Shellmod] Number of meshes connected to " + depN.name() + ": " + p_inMesh.numConnectedElements() + " nodes" );
+		MGlobal::displayInfo(MString() + "[Shellmod] Number of meshes connected to " + depN.name() + ": " + p_inMesh.numConnectedElements() + " nodes");
 
 		// ----------------------
 
@@ -317,7 +316,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		if (!destPlug_outMesh[0].isConnected())
 		{
-			MGlobal::displayError(MString() + "[Shellmod] No output mesh connected to " + depN.name() );
+			MGlobal::displayError(MString() + "[Shellmod] No output mesh connected to " + depN.name());
 			return MStatus::kFailure;
 		}
 		MFnDependencyNode depNoutMesh(destPlug_outMesh[0].node());
@@ -331,36 +330,36 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		for (int i = 1; i < p_currSelShapeA.length(); i++)
 		{
 
-			MFnDagNode fnDepSource( p_currSelShapeA[i].node() );
-			MGlobal::displayInfo(MString() + "[Shellmod] Adding: " + fnDepSource.partialPathName() );
+			MFnDagNode fnDepSource(p_currSelShapeA[i].node());
+			MGlobal::displayInfo(MString() + "[Shellmod] Adding: " + fnDepSource.partialPathName());
 
 			if (fnDepSource.partialPathName() == depNoutMesh.name()) {
-				MGlobal::displayWarning(MString() + "[Shellmod] Can't add shellMod output mesh (" + depN.name() + ") to itself! " );
+				MGlobal::displayWarning(MString() + "[Shellmod] Can't add shellMod output mesh (" + depN.name() + ") to itself! ");
 				return MStatus::kFailure;
 			}
 
 
 		}
 
-		MGlobal::displayInfo(MString() + "-------------" );
+		MGlobal::displayInfo(MString() + "-------------");
 
 		for (int i = 1; i < p_currSelShapeA.length(); i++)
 		{
-			MFnDagNode fnDepSource( p_currSelShapeA[i].node() );
-			MPlug plugSource = fnDepSource.findPlug( "worldMesh" );
+			MFnDagNode fnDepSource(p_currSelShapeA[i].node());
+			MPlug plugSource = fnDepSource.findPlug("worldMesh");
 			plugSource = plugSource.elementByLogicalIndex(0);
 
-			MPlug plugTarget = depN.findPlug( "inMesh" );
+			MPlug plugTarget = depN.findPlug("inMesh");
 			plugTarget = plugTarget.elementByLogicalIndex(plugTarget.numConnectedElements());
 
-			MGlobal::displayInfo(MString() + "[Shellmod] connected: " + plugSource.name() + " -> " + plugTarget.name()  );
+			MGlobal::displayInfo(MString() + "[Shellmod] connected: " + plugSource.name() + " -> " + plugTarget.name());
 
-			status = m_DGMod.connect( plugSource, plugTarget );
+			status = m_DGMod.connect(plugSource, plugTarget);
 			CHECK_MSTATUS_AND_RETURN_IT(status);
 			m_DGMod.doIt();
 
-			MObject o_temp = p_currSelShapeA[i].node() ;
-			assignSameMaterial( p_currSelShapeA[0], o_temp );
+			MObject o_temp = p_currSelShapeA[i].node();
+			assignSameMaterial(p_currSelShapeA[0], o_temp);
 
 
 			//// Set input mesh overrides
@@ -403,32 +402,32 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 			fnDepSource.findPlug("overrideShading", false, &status).setBool(false);
 			CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            
+
 #if MAYA_API_VERSION > 201500
-            
-            // Set  boundary smoothing off - OpenSubdiv
-            MPlug p_source_osdVertBoundary = fnDepSource.findPlug( "osdVertBoundary" );
-            p_source_osdVertBoundary.setInt(2);
-            
+
+			// Set  boundary smoothing off - OpenSubdiv
+			MPlug p_source_osdVertBoundary = fnDepSource.findPlug("osdVertBoundary");
+			p_source_osdVertBoundary.setInt(2);
+
 #endif
-            
-            // Set boundary smoothing off - LEGACY Catmull Clark
-            MPlug p_source_boundaryRule = fnDepSource.findPlug( "boundaryRule" );
-            p_source_boundaryRule.setInt(0);
+
+			// Set boundary smoothing off - LEGACY Catmull Clark
+			MPlug p_source_boundaryRule = fnDepSource.findPlug("boundaryRule");
+			p_source_boundaryRule.setInt(0);
 
 
 
 			// Find plugs for overrides
-			MPlug p_shellmod_overrideShading = depN.findPlug( "baseMeshDisplayOverride" );
-			MPlug p_source_override_enabled = fnDepSource.findPlug( "overrideEnabled" );
-			MPlug p_subdiv = depN.findPlug( "smoothMeshSubdiv" );
-			MPlug p_dispSmooth = fnDepSource.findPlug( "smoothLevel" );
+			MPlug p_shellmod_overrideShading = depN.findPlug("baseMeshDisplayOverride");
+			MPlug p_source_override_enabled = fnDepSource.findPlug("overrideEnabled");
+			MPlug p_subdiv = depN.findPlug("smoothMeshSubdiv");
+			MPlug p_dispSmooth = fnDepSource.findPlug("smoothLevel");
 
 
 			if (!p_source_override_enabled.isConnected())
 			{
 
-				status = m_DGMod.connect( p_shellmod_overrideShading, p_source_override_enabled );
+				status = m_DGMod.connect(p_shellmod_overrideShading, p_source_override_enabled);
 				CHECK_MSTATUS_AND_RETURN_IT(status);
 				m_DGMod.doIt();
 
@@ -438,7 +437,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 			if (!p_dispSmooth.isConnected())
 			{
 
-				status = m_DGMod.connect( p_subdiv, p_dispSmooth );
+				status = m_DGMod.connect(p_subdiv, p_dispSmooth);
 				CHECK_MSTATUS_AND_RETURN_IT(status);
 				m_DGMod.doIt();
 
@@ -454,16 +453,15 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 	}
 
 
-
 	// -----------------------------------------------------------------------------------------
 	// REMOVE SHELLMOD FROM SELECTED OBJECT
 	// shellModCommand -r;
-	else if ( argData.isFlagSet( "-r" ) )
+	else if (argData.isFlagSet("-r") || argData.isFlagSet("-app"))
 	{
 
 		MFnDagNode dgNode(p_currSelShapeA[0]);
 
-		MPlug aliasList = dgNode.findPlug( "worldMesh", status );
+		MPlug aliasList = dgNode.findPlug("worldMesh", status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
 		if (!aliasList[0].isConnected())
@@ -493,7 +491,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		MFnDependencyNode depN(destPlug.node());
 
-		MGlobal::displayInfo(MString() + "[Shellmod] Connected ShellMod Node " + depN.name() );
+		MGlobal::displayInfo(MString() + "[Shellmod] Connected ShellMod Node " + depN.name());
 
 		MPlug nodeMeshoutPlug = depN.findPlug("outMesh", status);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -505,7 +503,9 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 			return MStatus::kFailure;
 		}
 
+		MFnDependencyNode outWorldMesh_dn(destPlugs[0].node());
 
+		MString connMeshName = outWorldMesh_dn.name();
 
 
 		// Reset shading overrides
@@ -546,18 +546,37 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		MFnDagNode mfDgN2(destPlug2.node());
 
-		MGlobal::displayInfo(MString() + "[Shellmod] Connected Mesh Node " + mfDgN2.name() );
+		MGlobal::displayInfo(MString() + "[Shellmod] Connected Mesh Node " + mfDgN2.name());
+
+	
+
+		if (!argData.isFlagSet("-app")) {
+			status = m_DAGMod.deleteNode(mfDgN2.parent(0));
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+		}
 
 
-		status = m_DAGMod.deleteNode(mfDgN2.parent(0));
-		CHECK_MSTATUS_AND_RETURN_IT(status);
+		if (argData.isFlagSet("-app")) {
+			status = m_DAGMod.deleteNode(mfDgN.parent(0));
+			CHECK_MSTATUS_AND_RETURN_IT(status);
+		}
+
 
 		// Delete shellmod node too
 		status = m_DAGMod.deleteNode(depN.object());
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 
+		if (argData.isFlagSet("-app")) {
+
+			MSelectionList sList;
+			MGlobal::getSelectionListByName(connMeshName, sList);
+
+			MGlobal::setActiveSelectionList(sList);
+		}
 
 		m_DAGMod.doIt();
+
+
 	}
 
 
@@ -576,7 +595,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 			// Check if selection is allready connected to a shellmod
 			MFnDagNode dgNode(p_currSelShapeA[i]);
 
-			MPlug worldPlug = dgNode.findPlug( "worldMesh", status );
+			MPlug worldPlug = dgNode.findPlug("worldMesh", status);
 			CHECK_MSTATUS_AND_RETURN_IT(status);
 
 			//inSmoothLevelPA.append( dgNode.findPlug( "smoothLevel", status ) );
@@ -590,7 +609,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		}
 
 		// Create shellmod node
-		MObject o_shellModNode = createNodeMaya(m_DEPNode,"shellModNode");
+		MObject o_shellModNode = createNodeMaya(m_DEPNode, "shellModNode");
 
 
 
@@ -602,16 +621,16 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		for (int i = 0; i < p_currSelShapeA.length(); i++)
 		{
-			MFnDagNode fnDepSource( p_currSelShapeA[i].node() );
-			MPlug plugSource = fnDepSource.findPlug( "worldMesh" );
+			MFnDagNode fnDepSource(p_currSelShapeA[i].node());
+			MPlug plugSource = fnDepSource.findPlug("worldMesh");
 			plugSource = plugSource.elementByLogicalIndex(0);
 
-			MPlug plugTarget = fnDepShellMod.findPlug( "inMesh" );
+			MPlug plugTarget = fnDepShellMod.findPlug("inMesh");
 			plugTarget = plugTarget.elementByLogicalIndex(plugTarget.numConnectedElements());
 
-			MGlobal::displayInfo(MString() + "[Shellmod] connected: " + plugSource.name() + " -> " + plugTarget.name()  );
+			MGlobal::displayInfo(MString() + "[Shellmod] connected: " + plugSource.name() + " -> " + plugTarget.name());
 
-			status = m_DGMod.connect( plugSource, plugTarget );
+			status = m_DGMod.connect(plugSource, plugTarget);
 			CHECK_MSTATUS_AND_RETURN_IT(status);
 			m_DGMod.doIt();
 
@@ -625,31 +644,31 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 
 #if MAYA_API_VERSION > 201500
-            
-            // Set  boundary smoothing off - OpenSubdiv
-            MPlug p_source_osdVertBoundary = fnDepSource.findPlug( "osdVertBoundary" );
-            p_source_osdVertBoundary.setInt(2);
-            
+
+			// Set  boundary smoothing off - OpenSubdiv
+			MPlug p_source_osdVertBoundary = fnDepSource.findPlug("osdVertBoundary");
+			p_source_osdVertBoundary.setInt(2);
+
 #endif
-            
-            // Set boundary smoothing off - LEGACY Catmull Clark
-            MPlug p_source_boundaryRule = fnDepSource.findPlug( "boundaryRule" );
-            p_source_boundaryRule.setInt(0);
+
+			// Set boundary smoothing off - LEGACY Catmull Clark
+			MPlug p_source_boundaryRule = fnDepSource.findPlug("boundaryRule");
+			p_source_boundaryRule.setInt(0);
 
 
 
 
 			// Find plugs for overrides
-			MPlug p_shellmod_overrideShading = fnDepShellMod.findPlug( "baseMeshDisplayOverride" );
-			MPlug p_source_override_enabled = fnDepSource.findPlug( "overrideEnabled" );
-			MPlug p_subdiv = fnDepShellMod.findPlug( "smoothMeshSubdiv" );
-			MPlug p_dispSmooth = fnDepSource.findPlug( "smoothLevel" );
+			MPlug p_shellmod_overrideShading = fnDepShellMod.findPlug("baseMeshDisplayOverride");
+			MPlug p_source_override_enabled = fnDepSource.findPlug("overrideEnabled");
+			MPlug p_subdiv = fnDepShellMod.findPlug("smoothMeshSubdiv");
+			MPlug p_dispSmooth = fnDepSource.findPlug("smoothLevel");
 
 
 			if (!p_source_override_enabled.isConnected())
 			{
 
-				status = m_DGMod.connect( p_shellmod_overrideShading, p_source_override_enabled );
+				status = m_DGMod.connect(p_shellmod_overrideShading, p_source_override_enabled);
 				CHECK_MSTATUS_AND_RETURN_IT(status);
 				m_DGMod.doIt();
 
@@ -659,7 +678,7 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 			if (!p_dispSmooth.isConnected())
 			{
 
-				status = m_DGMod.connect( p_subdiv, p_dispSmooth );
+				status = m_DGMod.connect(p_subdiv, p_dispSmooth);
 				CHECK_MSTATUS_AND_RETURN_IT(status);
 				m_DGMod.doIt();
 
@@ -673,9 +692,9 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		// -----------------------------------------------------------------------------------------
 		// create output mesh and connect it to shellmod
 
-		o_newMesh = createNodeMaya(m_DEPNode,"mesh");
-		MFnDependencyNode fnDepshellModOutputMesh( o_newMesh );
-		fnDepshellModOutputMesh.setName( "shellModNode_mesh#" );
+		o_newMesh = createNodeMaya(m_DEPNode, "mesh");
+		MFnDependencyNode fnDepshellModOutputMesh(o_newMesh);
+		fnDepshellModOutputMesh.setName("shellModNode_mesh#");
 
 		// Find shape node of output mesh
 		MDagPath dag_outMeshTr;
@@ -684,15 +703,15 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 		MSelectionList sel_list;
 		sel_list.clear();
 		sel_list.add(fnDepshellModOutputMesh.name());
-		sel_list.getDagPath(0,dag_outMesh);
+		sel_list.getDagPath(0, dag_outMesh);
 		dag_outMeshTr = dag_outMesh;
 		dag_outMesh.extendToShape();
 		dag_outMeshShape = dag_outMesh;
 
-		MFnDependencyNode fnDepshellModOutputMeshShape( dag_outMeshShape.node() );
+		MFnDependencyNode fnDepshellModOutputMeshShape(dag_outMeshShape.node());
 
-		MPlug p_shellModMultiNode_outMesh = fnDepShellMod.findPlug( "outMesh" );
-		MPlug p_shellModMultiMesh_inMesh = fnDepshellModOutputMeshShape.findPlug( "inMesh" );
+		MPlug p_shellModMultiNode_outMesh = fnDepShellMod.findPlug("outMesh");
+		MPlug p_shellModMultiMesh_inMesh = fnDepshellModOutputMeshShape.findPlug("inMesh");
 
 
 		MPlug p_shellModMultiNode_overrideEnabled = fnDepShellMod.findPlug("outputMeshDisplayOverride");
@@ -709,23 +728,23 @@ MStatus ShellModCommand::doIt( const MArgList& argList )
 
 		}
 
-		
+
 		// Set default ramp
 		const float f_ramp_values[] = { 0.0, 1.0, 1.0, 0.0 };
 		const float f_ramp_positions[] = { 0.0, 0.1, 0.9, 1.0 };
 		const int f_ramp_interps[] = { 1,1,1,1 };
-		MFloatArray def_ramp_values(f_ramp_values,4);
+		MFloatArray def_ramp_values(f_ramp_values, 4);
 		MFloatArray def_ramp_positions(f_ramp_positions, 4);
 		MIntArray def_ramp_interps(f_ramp_interps, 4);
 
 		MPlug a_curveAttribute = fnDepShellMod.findPlug("profileRamp", status);
 		MRampAttribute a_Ramp(a_curveAttribute);
-		
-		a_Ramp.setRamp(def_ramp_values, def_ramp_positions,def_ramp_interps);
 
-		MGlobal::displayInfo(MString() + "[Shellmod] connected: " + p_shellModMultiNode_outMesh.name() + " -> " + p_shellModMultiMesh_inMesh.name()  );
+		a_Ramp.setRamp(def_ramp_values, def_ramp_positions, def_ramp_interps);
 
-		status = m_DGMod.connect( p_shellModMultiNode_outMesh, p_shellModMultiMesh_inMesh );
+		MGlobal::displayInfo(MString() + "[Shellmod] connected: " + p_shellModMultiNode_outMesh.name() + " -> " + p_shellModMultiMesh_inMesh.name());
+
+		status = m_DGMod.connect(p_shellModMultiNode_outMesh, p_shellModMultiMesh_inMesh);
 		CHECK_MSTATUS_AND_RETURN_IT(status);
 		m_DGMod.doIt();
 
@@ -767,19 +786,31 @@ MStatus ShellModCommand::undoIt()
 
 	// Restore the initial state
 	status = m_DGMod.undoIt();
-	CHECK_MSTATUS_AND_RETURN_IT( status );
+	CHECK_MSTATUS_AND_RETURN_IT(status);
 
 	status = m_DAGMod.undoIt();
 	CHECK_MSTATUS_AND_RETURN_IT(status);
 
+	MSelectionList sList;
 
 	// Set back overrides on all meshes
 	for (int i = 0; i < p_currSelShapeA.length(); i++)
 	{
 		setPlugs(p_currSelShapeA[i].node(), "overrideEnabled", "false");
+
+		MFnDagNode mfDgN2(p_currSelShapeA[i].node());
+		if (mfDgN2.parentCount() != 0) {
+
+			MFnDagNode mfDgN3(mfDgN2.parent(0));
+
+			sList.add(mfDgN3.partialPathName());
+		}
+
 	}
 
 	deleteNode(o_newMesh);
+
+	MGlobal::setActiveSelectionList(sList);
 
 	return MS::kSuccess;
 }

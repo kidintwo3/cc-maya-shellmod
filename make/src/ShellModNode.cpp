@@ -245,6 +245,8 @@ void shellModNode::aboutToDeleteCB(MObject& node, MDGModifier& modifier, void* p
 
 		mfDgN.setObject(destPlug.node());
 
+		MPlug p_out_displayType = mfDgN.findPlug("overrideDisplayType", false);
+		p_out_displayType.setInt(0);
 
 		MPlug p_out_overrideEnabled = mfDgN.findPlug("overrideEnabled", false);
 		p_out_overrideEnabled.setBool(false);

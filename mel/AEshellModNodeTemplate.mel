@@ -55,6 +55,7 @@ global proc AEshellModNodeTemplate( string $nodeName )
 	editorTemplate -endLayout;
 	
 	editorTemplate -beginLayout "Global settings" -collapse 0;
+	editorTemplate -callCustom "AE_apply_ShellMod_create" "AE_apply_ShellMod_edit" "";
 	editorTemplate -callCustom "AE_del_ShellMod_create" "AE_del_ShellMod_edit" "";
 	
 	editorTemplate -endLayout;
@@ -322,6 +323,17 @@ global proc AE_remove_customProfile_ShellMod(string $attrName)
 
 // ----------------------------
 // Global window Create / Edit
+global proc AE_apply_ShellMod_create(string $attrName)
+{
+	string $nodeName[];
+    tokenize($attrName, ".", $nodeName);
+    iconTextButton -h 22 -style "iconAndTextHorizontal" -image1 "shellModNode_Apply.png" -label "Apply ShellMod for selected object"  -bgc 0.3 0.3 0.3 -c  ("AE_apply_ShellMod " + $nodeName[0] );
+}
+
+global proc AE_apply_ShellMod_edit(string $attrName)
+{
+}
+
 global proc AE_del_ShellMod_create(string $attrName)
 {
 	string $nodeName[];
@@ -332,8 +344,13 @@ global proc AE_del_ShellMod_create(string $attrName)
 global proc AE_del_ShellMod_edit(string $attrName)
 {
 }
-
 // ----------------------------
+// Apply shellmod from object
+global proc AE_apply_ShellMod(string $attrName)
+{
+shellModCommand -app;
+}
+
 // Remove shellmod from object
 global proc AE_remove_ShellMod(string $attrName)
 {
